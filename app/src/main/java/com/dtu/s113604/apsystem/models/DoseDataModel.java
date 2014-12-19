@@ -5,44 +5,49 @@ package com.dtu.s113604.apsystem.models;
  */
 public class DoseDataModel {
 
-    private int lastInsulinDose;
-    private int currentInsulinDose;
-    private int lastGlucagonDose;
-    private int currentGlucagonDose;
+    private long id;
+    private String datetime;
 
-    public int getLastInsulinDose() {
-        return lastInsulinDose;
+    private String stateProperties;
+
+    public DoseDataModel(long id, String datetime, String stateProperties) {
+        this.id = id;
+        this.datetime = datetime;
+        this.stateProperties = stateProperties;
     }
 
-    public int getCurrentInsulinDose() {
-        return currentInsulinDose;
+    public DoseDataModel() {}
+
+    public long getId() {
+        return id;
     }
 
-    public void setCurrentInsulinDose(int value) {
-        this.lastInsulinDose = this.currentInsulinDose;
-        this.currentInsulinDose = value;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public int getLastGlucagonDose() {
-        return lastGlucagonDose;
+    public String getDatetime() {
+        return datetime;
     }
 
-    public int getCurrentGlucagonDose() {
-        return currentGlucagonDose;
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 
-    public void setCurrentGlucagonDose(int value) {
-        this.lastGlucagonDose = currentGlucagonDose;
-        this.currentGlucagonDose = value;
+    public String getStateProperties() {
+        return stateProperties;
+    }
+
+    public void setStateProperties(String stateProperties) {
+        this.stateProperties = stateProperties;
     }
 
     @Override
     public String toString() {
-        return "GlucagonDoseModel{" +
-                "lastInsulinDose=" + lastInsulinDose +
-                ", currentInsulinDose=" + currentInsulinDose +
-                ", lastGlucagonDose=" + lastGlucagonDose +
-                ", currentGlucagonDose=" + currentGlucagonDose +
+        return "DoseDataModel{" +
+                "id=" + id +
+                ", datetime='" + datetime + '\'' +
+                ", stateProperties='" + stateProperties + '\'' +
                 '}';
     }
 }

@@ -3,7 +3,6 @@ package com.dtu.s113604.apsystem.models;
 /**
  * Created by marksv on 06/12/14.
  */
-
 /*
 
 Patient Parameters {Carb Ratio, Insulin Sensitivity Factor, Insulin Reaction Time, Glucagon Sensitivity, Glucagon Reaction Time}
@@ -12,68 +11,49 @@ Patient Parameters {Carb Ratio, Insulin Sensitivity Factor, Insulin Reaction Tim
 
 public class UserDataModel {
 
-    private int carbRatio;
-    private int insulinSensitivityFactor;
-    private int insulinReactionTime;
-    private int glucagonSensitivityFactor;
-    private int glucagonReactionTime;
+    private long id;
+    private String datetime;
 
-    public UserDataModel(int carbRatio, int insulinSensitivityFactor, int insulinReactionTime, int glucagonSensitivityFactor, int glucagonReactionTime) {
-        this.carbRatio = carbRatio;
-        this.insulinSensitivityFactor = insulinSensitivityFactor;
-        this.insulinReactionTime = insulinReactionTime;
-        this.glucagonSensitivityFactor = glucagonSensitivityFactor;
-        this.glucagonReactionTime = glucagonReactionTime;
+    private String stateProperties;
+
+    public UserDataModel(long id, String datetime, String stateProperties) {
+        this.id = id;
+        this.datetime = datetime;
+        this.stateProperties = stateProperties;
     }
 
-    public int getCarbRatio() {
-        return carbRatio;
+    public UserDataModel() {}
+
+    public long getId() {
+        return id;
     }
 
-    public void setCarbRatio(int carbRatio) {
-        this.carbRatio = carbRatio;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public int getInsulinSensitivityFactor() {
-        return insulinSensitivityFactor;
+    public String getDatetime() {
+        return datetime;
     }
 
-    public void setInsulinSensitivityFactor(int insulinSensitivityFactor) {
-        this.insulinSensitivityFactor = insulinSensitivityFactor;
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 
-    public int getInsulinReactionTime() {
-        return insulinReactionTime;
+    public String getStateProperties() {
+        return stateProperties;
     }
 
-    public void setInsulinReactionTime(int insulinReactionTime) {
-        this.insulinReactionTime = insulinReactionTime;
-    }
-
-    public int getGlucagonSensitivityFactor() {
-        return glucagonSensitivityFactor;
-    }
-
-    public void setGlucagonSensitivityFactor(int glucagonSensitivityFactor) {
-        this.glucagonSensitivityFactor = glucagonSensitivityFactor;
-    }
-
-    public int getGlucagonReactionTime() {
-        return glucagonReactionTime;
-    }
-
-    public void setGlucagonReactionTime(int glucagonReactionTime) {
-        this.glucagonReactionTime = glucagonReactionTime;
+    public void setStateProperties(String stateProperties) {
+        this.stateProperties = stateProperties;
     }
 
     @Override
     public String toString() {
         return "UserDataModel{" +
-                "carbRatio=" + carbRatio +
-                ", insulinSensitivityFactor=" + insulinSensitivityFactor +
-                ", insulinReactionTime=" + insulinReactionTime +
-                ", glucagonSensitivityFactor=" + glucagonSensitivityFactor +
-                ", glucagonReactionTime=" + glucagonReactionTime +
+                "id=" + id +
+                ", datetime='" + datetime + '\'' +
+                ", stateProperties='" + stateProperties + '\'' +
                 '}';
     }
 }

@@ -4,7 +4,6 @@ package com.dtu.s113604.apsystem.models;
  * Created by marksv on 06/12/14.
  */
 
-
 /*
     Last CGM value
     Insulin Pump Serial Number
@@ -19,12 +18,9 @@ public class APStateModel {
 
     private long id;
     private String datetime;
-
-    private int lastGlucoseValue;
-    private int currentGlucoseValue;
+    private String stateProperties;
 
     private DoseDataModel doseData;
-
     private DeviceDataModel deviceData;
     private UserDataModel patientParameters;
     private AlgorithmStateModel algorithmState;
@@ -36,18 +32,7 @@ public class APStateModel {
         this.doseData = doseData;
     }
 
-    public int getLastGlucoseValue() {
-        return lastGlucoseValue;
-    }
-
-    public int getCurrentGlucoseValue() {
-        return currentGlucoseValue;
-    }
-
-    public void setCurrentGlucoseValue(int value) {
-        this.lastGlucoseValue = this.currentGlucoseValue;
-        this.currentGlucoseValue = value;
-    }
+    public APStateModel () {}
 
     public DoseDataModel getDoseData() {
         return doseData;
@@ -81,16 +66,12 @@ public class APStateModel {
         this.algorithmState = algorithmState;
     }
 
-    @Override
-    public String toString() {
-        return "APStateModel{" +
-                "lastGlucoseValue=" + lastGlucoseValue +
-                ", currentGlucoseValue=" + currentGlucoseValue +
-                ", doseData=" + doseData.toString() +
-                ", deviceData=" + deviceData.toString() +
-                ", patientParameters=" + patientParameters.toString() +
-                ", algorithmState=" + algorithmState.toString() +
-                '}';
+    public String getStateProperties() {
+        return stateProperties;
+    }
+
+    public void setStateProperties(String stateProperties) {
+        this.stateProperties = stateProperties;
     }
 
     public String getDatetime() {
@@ -107,5 +88,18 @@ public class APStateModel {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "APStateModel{" +
+                "id=" + id +
+                ", datetime='" + datetime + '\'' +
+                ", stateProperties='" + stateProperties + '\'' +
+                ", doseData=" + doseData +
+                ", deviceData=" + deviceData +
+                ", patientParameters=" + patientParameters +
+                ", algorithmState=" + algorithmState +
+                '}';
     }
 }

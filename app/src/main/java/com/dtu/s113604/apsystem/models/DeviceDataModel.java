@@ -4,46 +4,49 @@ package com.dtu.s113604.apsystem.models;
  * Created by marksv on 06/12/14.
  */
 public class DeviceDataModel {
-    private String insulinPumpSerialNumber;
-    private String glucagonPumpSerialNumber;
-    private String CGMReceiverBLEAddress;
+    private long id;
+    private String datetime;
 
-    public DeviceDataModel(String insulinPumpSerialNumber, String glucagonPumpSerialNumber, String CGMReceiverBLEAddress) {
-        this.insulinPumpSerialNumber = insulinPumpSerialNumber;
-        this.glucagonPumpSerialNumber = glucagonPumpSerialNumber;
-        this.CGMReceiverBLEAddress = CGMReceiverBLEAddress;
+    private String stateProperties;
+
+    public DeviceDataModel(long id, String datetime, String stateProperties) {
+        this.id = id;
+        this.datetime = datetime;
+        this.stateProperties = stateProperties;
     }
 
-    public String getInsulinPumpSerialNumber() {
-        return insulinPumpSerialNumber;
+    public DeviceDataModel() {}
+
+    public long getId() {
+        return id;
     }
 
-    public void setInsulinPumpSerialNumber(String insulinPumpSerialNumber) {
-        this.insulinPumpSerialNumber = insulinPumpSerialNumber;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public String getGlucagonPumpSerialNumber() {
-        return glucagonPumpSerialNumber;
+    public String getDatetime() {
+        return datetime;
     }
 
-    public void setGlucagonPumpSerialNumber(String glucagonPumpSerialNumber) {
-        this.glucagonPumpSerialNumber = glucagonPumpSerialNumber;
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 
-    public String getCGMReceiverBLEAddress() {
-        return CGMReceiverBLEAddress;
+    public String getStateProperties() {
+        return stateProperties;
     }
 
-    public void setCGMReceiverBLEAddress(String CGMReceiverBLEAddress) {
-        this.CGMReceiverBLEAddress = CGMReceiverBLEAddress;
+    public void setStateProperties(String stateProperties) {
+        this.stateProperties = stateProperties;
     }
 
     @Override
     public String toString() {
         return "DeviceDataModel{" +
-                "insulinPumpSerialNumber='" + insulinPumpSerialNumber + '\'' +
-                ", glucagonPumpSerialNumber='" + glucagonPumpSerialNumber + '\'' +
-                ", CGMReceiverBLEAddress='" + CGMReceiverBLEAddress + '\'' +
+                "id=" + id +
+                ", datetime='" + datetime + '\'' +
+                ", stateProperties='" + stateProperties + '\'' +
                 '}';
     }
 }

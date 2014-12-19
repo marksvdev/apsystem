@@ -2,8 +2,6 @@ package com.dtu.s113604.apsystem.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.dtu.s113604.apsystem.R;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.APStateDataSource;
