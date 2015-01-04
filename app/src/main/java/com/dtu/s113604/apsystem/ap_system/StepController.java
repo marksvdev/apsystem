@@ -50,7 +50,7 @@ public class StepController implements Runnable {
         IControlAlgorithm control = new ControlAlgorithm();
         IPump pump = new Pump();
 
-        Document APXML = StateManager.getInstance().getState().getXML();
+        Document APXML = getState().getXML();
         Document deviceXML = getState().getDeviceData().getXML();
         Document doseXML = getState().getDoseData().getXML();
 
@@ -66,6 +66,9 @@ public class StepController implements Runnable {
         int newGlucoseValue = cgm.getGlucoseValue(CGMBLEAddress, CGMSN);
         setLatestEGV(newGlucoseValue);
         Log.i(TAG, "newGlucoseValue = " + newGlucoseValue);
+
+        int batteryCGM = cgm.getBattery(CGMBLEAddress, CGMSN);
+        setCGMBattery(batteryCGM);
 
         XMLManager.insert(APXML, StateProps.Glucose.toString(), String.valueOf(newGlucoseValue));
         XMLManager.insert(APXML, StateProps.GlucoseTime.toString(), DateTime.now());
@@ -101,7 +104,15 @@ public class StepController implements Runnable {
         Log.i(TAG, "insulinPumpResponse = " + insulinPumpResponse);
         Log.i(TAG, "glucagonPumpResponse = " + glucagonPumpResponse);
 
-        // SAVE
+        int batteryPumpInsulin = pump.getBatteryInsulinPump(insulinPumpSN);
+        int batteryPumpGlucagon = pump.getBatteryGlucagonPump(glucagonPumpSN);
+
+        setBatteryPumpInsulin(batteryPumpInsulin);
+        setBatteryPumpGlucagon(batteryPumpGlucagon);
+
+        /*
+        *   Save to Datastore
+        */
 
         IAPStateDataSource dataSource = new APStateDataSource(context);
         dataSource.save(getState());
@@ -109,6 +120,17 @@ public class StepController implements Runnable {
 
     private void setLatestEGV(int value) {
         Broadcast.broadcastUpdate(context, MSGCode.UPDATE_EGV.toString(), String.valueOf(value));
+    }
+
+    private void setCGMBattery(int value) {
+        Broadcast.broadcastUpdate(context, MSGCode.UPDATE_BATTERY_CGM.toString(), String.valueOf(value));
+    }
+
+    private void setBatteryPumpInsulin(int value) {
+        Broadcast.broadcastUpdate(context, MSGCode.UPDATE_BATTERY_PUMP_INSULIN.toString(), String.valueOf(value));
+    }
+    private void setBatteryPumpGlucagon(int value) {
+        Broadcast.broadcastUpdate(context, MSGCode.UPDATE_BATTERY_PUMP_GLUCAGON.toString(), String.valueOf(value));
     }
 
     private APStateModel getState() {

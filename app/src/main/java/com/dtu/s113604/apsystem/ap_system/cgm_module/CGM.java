@@ -13,6 +13,8 @@ public class CGM implements ICGM {
 
     private String info = "Dexcom G4 Platinum";
 
+    private Random rand = new Random();
+
     @Override
     public int getGlucoseValue(String bleAddress, String SN) {
         Log.i(TAG, "Waiting for next reading...(DEBUG: 10 sec)");
@@ -21,8 +23,6 @@ public class CGM implements ICGM {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        Random rand = new Random();
 
         return rand.nextInt((10 - 1) + 1) + 1;
     }
@@ -34,6 +34,6 @@ public class CGM implements ICGM {
 
     @Override
     public int getBattery(String bleAddress, String SN) {
-        return 80;
+        return rand.nextInt((100 - 80) + 1) + 80;
     }
 }

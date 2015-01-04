@@ -7,4 +7,6 @@ public interface IPump {
     String doseInsulin(String insulinPumpSerialNumber, int dose);
     String doseGlucagon(String glucagonPumpSerialNumber, int dose);
     String getInfo(String pumpSerialNumber);
+    int getBatteryInsulinPump(String insulinPumpSerialNumber);
+    int getBatteryGlucagonPump(String glucagonPumpSerialNumber);
 }

@@ -36,7 +36,8 @@ import utils.XMLManager;
 public class MainActivity extends Activity {
 
     private Button btnSave;
-    private TextView textViewEGV;
+    private TextView textViewEGV, textViewBatteryCGM,
+            textViewBatteryPumpInsulin, textViewBatteryPumpGlucagon;
     private EditText editTextCGM_SN, editTextCGM_BLE,
             editTextPumpInsulinSN, editTextPumpGlucagonSN,
             editTextUserInsulinSens, editTextUserGlucagonSens;
@@ -50,6 +51,9 @@ public class MainActivity extends Activity {
         btnSave = (Button) findViewById(R.id.btnSave);
 
         textViewEGV = (TextView) findViewById(R.id.LatestEGVValue);
+        textViewBatteryCGM = (TextView) findViewById(R.id.CGM_Battery);
+        textViewBatteryPumpInsulin = (TextView) findViewById(R.id.PUMP_Battery_Insulin);
+        textViewBatteryPumpGlucagon = (TextView) findViewById(R.id.PUMP_Battery_Glucagon);
 
         editTextCGM_SN = (EditText) findViewById(R.id.CGM_SN);
         editTextCGM_BLE = (EditText) findViewById(R.id.CGM_BLE);
@@ -74,7 +78,19 @@ public class MainActivity extends Activity {
     }
 
     public void setTextViewEGV(String value) {
-        textViewEGV.setText(value);
+        textViewEGV.setText(value + " mg/dl");
+    }
+
+    public void setTextViewBatteryCGM(String value) {
+        textViewBatteryCGM.setText(value  + "%");
+    }
+
+    public void setTextViewBatteryPumpInsulin(String value) {
+        textViewBatteryPumpInsulin.setText(value + "%");
+    }
+
+    public void setGetTextViewBatteryPumpGlucagon(String value) {
+        textViewBatteryPumpGlucagon.setText(value + "%");
     }
 
     private final BroadcastReceiver mUpdateViewReceiver = new BroadcastReceiver() {
@@ -86,12 +102,27 @@ public class MainActivity extends Activity {
                 String EGV = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
                 setTextViewEGV(EGV);
             }
+            else if(action.equals(MSGCode.UPDATE_BATTERY_CGM.toString())) {
+                String batteryCGM = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
+                setTextViewBatteryCGM(batteryCGM);
+            }
+            else if(action.equals(MSGCode.UPDATE_BATTERY_PUMP_INSULIN.toString())) {
+                String batteryPumpInsulin = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
+                setTextViewBatteryPumpInsulin(batteryPumpInsulin);
+            }
+            else if(action.equals(MSGCode.UPDATE_BATTERY_PUMP_GLUCAGON.toString())) {
+                String batteryPumpGlucagon = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
+                setGetTextViewBatteryPumpGlucagon(batteryPumpGlucagon);
+            }
         }
     };
 
     private static IntentFilter makeUpdateViewIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MSGCode.UPDATE_EGV.toString());
+        intentFilter.addAction(MSGCode.UPDATE_BATTERY_CGM.toString());
+        intentFilter.addAction(MSGCode.UPDATE_BATTERY_PUMP_INSULIN.toString());
+        intentFilter.addAction(MSGCode.UPDATE_BATTERY_PUMP_GLUCAGON.toString());
         return intentFilter;
     }
 

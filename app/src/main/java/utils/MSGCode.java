@@ -6,6 +6,9 @@ package utils;
 public enum MSGCode {
     EXTRA_DATA("100"),
     UPDATE_EGV("200"),
+    UPDATE_BATTERY_CGM("300"),
+    UPDATE_BATTERY_PUMP_INSULIN("320"),
+    UPDATE_BATTERY_PUMP_GLUCAGON("340"),
 
     ;
 
