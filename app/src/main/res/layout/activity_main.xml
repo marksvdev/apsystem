@@ -16,7 +16,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Latest EGV Value: " />
+                android:text="Latest EGV Value  " />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -32,84 +32,125 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CGM SN"/>
-            <EditText
+                android:text="CGM Battery" />
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="SM42390264000000"
-                android:id="@+id/CGM_SN"/>
+                android:text="100%"
+                android:id="@+id/CGM_Battery"/>
         </TableRow>
 
         <TableRow>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CGM BLE Address"/>
-            <EditText
+                android:text="Pump Battery" />
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="F6:15:99:2D:5D:88"
-                android:id="@+id/CGM_BLE"/>
+                android:text="100%"
+                android:id="@+id/PUMP_Battery"/>
         </TableRow>
 
         <TableRow>
             <TextView />
         </TableRow>
-
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Insulin Pump SN"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="387420752"
-                android:id="@+id/PUMP_Insulin_SN"/>
-        </TableRow>
-
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Glucagon Pump SN"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="023482978"
-                android:id="@+id/PUMP_GLUCAGON_SN"/>
-        </TableRow>
-
-        <TableRow>
-            <TextView />
-        </TableRow>
-
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Insulin Sensitivity"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="2"
-                android:id="@+id/USER_INSULIN_SENS"/>
-        </TableRow>
-
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Glucagon Sensitivity"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="2"
-                android:id="@+id/USER_GLUCAGON_SENS"/>
-        </TableRow>
-
-
     </TableLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"
+            android:shrinkColumns="0">
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CGM SN"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="SM42390264000000"
+                    android:id="@+id/CGM_SN"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CGM BLE Address"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="F6:15:99:2D:5D:88"
+                    android:id="@+id/CGM_BLE"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Insulin Pump SN"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="387420752"
+                    android:id="@+id/PUMP_Insulin_SN"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Glucagon Pump SN"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="023482978"
+                    android:id="@+id/PUMP_GLUCAGON_SN"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Insulin Sensitivity"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="2"
+                    android:id="@+id/USER_INSULIN_SENS"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Glucagon Sensitivity"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="2"
+                    android:id="@+id/USER_GLUCAGON_SENS"/>
+            </TableRow>
+
+
+        </TableLayout>
+
+        </ScrollView>
+
 
     <LinearLayout
         android:layout_width="match_parent"

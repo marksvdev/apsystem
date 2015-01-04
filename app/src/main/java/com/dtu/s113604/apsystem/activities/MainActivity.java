@@ -35,7 +35,6 @@ import utils.XMLManager;
 
 public class MainActivity extends Activity {
 
-//    private Button btnExec, btnStop;
     private Button btnSave;
     private TextView textViewEGV;
     private EditText editTextCGM_SN, editTextCGM_BLE,
@@ -47,9 +46,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        btnExec = (Button) findViewById(R.id.btnExec);
-//        btnStop = (Button) findViewById(R.id.btnStop);
 
         btnSave = (Button) findViewById(R.id.btnSave);
 
