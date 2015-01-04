@@ -1,5 +1,9 @@
 package com.dtu.s113604.apsystem.models;
 
+import org.w3c.dom.Document;
+
+import utils.XMLManager;
+
 /**
  * Created by marksv on 06/12/14.
  */
@@ -8,15 +12,21 @@ public class DoseDataModel {
     private long id;
     private String datetime;
 
-    private String stateProperties;
+    private Document stateProperties;
 
-    public DoseDataModel(long id, String datetime, String stateProperties) {
-        this.id = id;
+    public DoseDataModel(String datetime, Document stateProperties) {
         this.datetime = datetime;
         this.stateProperties = stateProperties;
     }
 
-    public DoseDataModel() {}
+    public DoseDataModel(String datetime) {
+        this.datetime = datetime;
+        stateProperties = XMLManager.generateNewDocument();
+    }
+
+    public DoseDataModel() {
+        stateProperties = XMLManager.generateNewDocument();
+    }
 
     public long getId() {
         return id;
@@ -35,11 +45,19 @@ public class DoseDataModel {
     }
 
     public String getStateProperties() {
+        return XMLManager.DocumentToString(stateProperties);
+    }
+
+    public void setStateProperties(String state) {
+        stateProperties = XMLManager.loadXMLFromString(state);
+    }
+
+    public Document getXML() {
         return stateProperties;
     }
 
-    public void setStateProperties(String stateProperties) {
-        this.stateProperties = stateProperties;
+    public void setXML(Document doc) {
+        stateProperties = doc;
     }
 
     @Override

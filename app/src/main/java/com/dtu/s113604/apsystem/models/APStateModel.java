@@ -1,5 +1,9 @@
 package com.dtu.s113604.apsystem.models;
 
+import org.w3c.dom.Document;
+
+import utils.XMLManager;
+
 /**
  * Created by marksv on 06/12/14.
  */
@@ -18,7 +22,7 @@ public class APStateModel {
 
     private long id;
     private String datetime;
-    private String stateProperties;
+    private Document stateProperties;
 
     private DoseDataModel doseData;
     private DeviceDataModel deviceData;
@@ -30,9 +34,12 @@ public class APStateModel {
         this.patientParameters = patientParameters;
         this.algorithmState = algorithmState;
         this.doseData = doseData;
+        stateProperties = XMLManager.generateNewDocument();
     }
 
-    public APStateModel () {}
+    public APStateModel () {
+        stateProperties = XMLManager.generateNewDocument();
+    }
 
     public DoseDataModel getDoseData() {
         return doseData;
@@ -66,14 +73,6 @@ public class APStateModel {
         this.algorithmState = algorithmState;
     }
 
-    public String getStateProperties() {
-        return stateProperties;
-    }
-
-    public void setStateProperties(String stateProperties) {
-        this.stateProperties = stateProperties;
-    }
-
     public String getDatetime() {
         return datetime;
     }
@@ -89,6 +88,24 @@ public class APStateModel {
     public void setId(long id) {
         this.id = id;
     }
+
+    public String getStateProperties() {
+        return XMLManager.DocumentToString(stateProperties);
+    }
+
+    public void setStateProperties(String state) {
+        stateProperties = XMLManager.loadXMLFromString(state);
+    }
+
+    public Document getXML() {
+        return stateProperties;
+    }
+
+    public void setXML(Document doc) {
+        stateProperties = doc;
+    }
+
+
 
     @Override
     public String toString() {

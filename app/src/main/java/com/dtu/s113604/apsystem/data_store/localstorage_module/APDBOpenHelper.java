@@ -27,7 +27,7 @@ public class APDBOpenHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_USER_DATA + "( " +
                     COLUMN_USER_DATA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_USER_DATA_DATETIME + " TEXT, " +
-                    COLUMN_USER_DATA_STATE_PROPERTIES + " TEXT, " +
+                    COLUMN_USER_DATA_STATE_PROPERTIES + " TEXT " +
                     ");";
 
     /******
@@ -43,7 +43,7 @@ public class APDBOpenHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_DOSE_DATA + "( " +
                     COLUMN_DOSE_DATA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_DOSE_DATA_DATETIME + " TEXT, " +
-                    COLUMN_DOSE_DATA_STATE_PROPERTIES + " TEXT, " +
+                    COLUMN_DOSE_DATA_STATE_PROPERTIES + " TEXT " +
                     ");";
 
     /******
@@ -113,7 +113,7 @@ public class APDBOpenHelper extends SQLiteOpenHelper {
         db.execSQL(TABLE_CREATE_USER_DATA);
         db.execSQL(TABLE_CREATE_DOSE_DATA);
         db.execSQL(TABLE_CREATE_DEVICE_DATA);
-        db.execSQL(TABLE_ALGO_STATE);
+        db.execSQL(TABLE_CREATE_ALGO_STATE);
         db.execSQL(TABLE_CREATE_AP_STATE);
         Log.i(TAG, "Tables has been created");
     }

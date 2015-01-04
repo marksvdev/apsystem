@@ -13,6 +13,8 @@ import com.dtu.s113604.apsystem.models.DeviceDataModel;
 import com.dtu.s113604.apsystem.models.DoseDataModel;
 import com.dtu.s113604.apsystem.models.UserDataModel;
 
+import utils.DateTime;
+
 /**
  * Created by marksv on 07/12/14.
  */
@@ -49,9 +51,11 @@ public class APStateDataSource implements IAPStateDataSource {
     public APStateModel save(APStateModel apState) {
         openWriteable();
 
+        String now = DateTime.now();
+
         // Saving AlgorithmStateModel
         ContentValues algorithmStateValues = new ContentValues();
-        algorithmStateValues.put(APDBOpenHelper.COLUMN_ALGO_DATETIME, apState.getAlgorithmState().getDatetime());
+        algorithmStateValues.put(APDBOpenHelper.COLUMN_ALGO_DATETIME, now);
         algorithmStateValues.put(APDBOpenHelper.COLUMN_ALGO_STATE_PROPERTIES, apState.getAlgorithmState().getStateProperties());
 
         long algo_insertid = database.insert(APDBOpenHelper.TABLE_ALGO_STATE, null, algorithmStateValues);
@@ -59,7 +63,7 @@ public class APStateDataSource implements IAPStateDataSource {
 
         // Saving DeviceDataModel
         ContentValues deviceStateValues = new ContentValues();
-        deviceStateValues.put(APDBOpenHelper.COLUMN_DEVICE_DATA_DATETIME, apState.getDeviceData().getDatetime());
+        deviceStateValues.put(APDBOpenHelper.COLUMN_DEVICE_DATA_DATETIME, now);
         deviceStateValues.put(APDBOpenHelper.COLUMN_DEVICE_DATA_STATE_PROPERTIES, apState.getDeviceData().getStateProperties());
 
         long device_insertid = database.insert(APDBOpenHelper.TABLE_DEVICE_DATA, null, deviceStateValues);
@@ -67,7 +71,7 @@ public class APStateDataSource implements IAPStateDataSource {
 
         // Saving DoseDataModel
         ContentValues doseStateValues = new ContentValues();
-        doseStateValues.put(APDBOpenHelper.COLUMN_DOSE_DATA_DATETIME, apState.getDoseData().getDatetime());
+        doseStateValues.put(APDBOpenHelper.COLUMN_DOSE_DATA_DATETIME, now);
         doseStateValues.put(APDBOpenHelper.COLUMN_DOSE_DATA_STATE_PROPERTIES, apState.getDoseData().getStateProperties());
 
         long dose_insertid = database.insert(APDBOpenHelper.TABLE_DOSE_DATA, null, doseStateValues);
@@ -75,7 +79,7 @@ public class APStateDataSource implements IAPStateDataSource {
 
         // Saving UserDataModel
         ContentValues userStateValues = new ContentValues();
-        userStateValues.put(APDBOpenHelper.COLUMN_USER_DATA_DATETIME, apState.getPatientParameters().getDatetime());
+        userStateValues.put(APDBOpenHelper.COLUMN_USER_DATA_DATETIME, now);
         userStateValues.put(APDBOpenHelper.COLUMN_USER_DATA_STATE_PROPERTIES, apState.getPatientParameters().getStateProperties());
 
         long user_insertid = database.insert(APDBOpenHelper.TABLE_USER_DATA, null, userStateValues);
@@ -83,7 +87,7 @@ public class APStateDataSource implements IAPStateDataSource {
 
         // Saving APStateModel
         ContentValues apStateValues = new ContentValues();
-        apStateValues.put(APDBOpenHelper.COLUMN_AP_DATETIME, apState.getDatetime());
+        apStateValues.put(APDBOpenHelper.COLUMN_AP_DATETIME, now);
         apStateValues.put(APDBOpenHelper.COLUMN_AP_STATE_PROPERTIES, apState.getStateProperties());
         apStateValues.put(APDBOpenHelper.COLUMN_ALGORITHM_State_FK_ID, apState.getAlgorithmState().getId());
         apStateValues.put(APDBOpenHelper.COLUMN_DEVICE_DATA_FK_ID, apState.getDeviceData().getId());
