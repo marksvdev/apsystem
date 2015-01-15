@@ -11,7 +11,9 @@ import com.dtu.s113604.apsystem.ap_system.pump_module.IPump;
 import com.dtu.s113604.apsystem.ap_system.pump_module.Pump;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.APStateDataSource;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.IAPStateDataSource;
-import com.dtu.s113604.apsystem.models.APStateModel;
+import com.dtu.s113604.apsystem.ap_system.models.*;
+import com.dtu.s113604.apsystem.system_monitor.SystemMonitor;
+
 
 import org.w3c.dom.Document;
 
@@ -50,29 +52,27 @@ public class StepController implements Runnable {
         IControlAlgorithm control = new ControlAlgorithm();
         IPump pump = new Pump();
 
-        Document APXML = getState().getXML();
-        Document deviceXML = getState().getDeviceData().getXML();
-        Document doseXML = getState().getDoseData().getXML();
-
         /*
         *   CGM
         */
 
-        String CGMBLEAddress = XMLManager.getValue(deviceXML, StateProps.CGMBLEAddress.toString());
-        String CGMSN = XMLManager.getValue(deviceXML, StateProps.CGMSerialNumber.toString());
+        String CGMBLEAddress = getState().getDeviceData().getCGMBLEAddress();
+        String CGMSN = getState().getDeviceData().getCGMSerialNumber();
         Log.i(TAG, "CGMBLEAddress = " + CGMBLEAddress);
         Log.i(TAG, "CGMSN = " + CGMSN);
 
         int newGlucoseValue = cgm.getGlucoseValue(CGMBLEAddress, CGMSN);
-        setLatestEGV(newGlucoseValue);
         Log.i(TAG, "newGlucoseValue = " + newGlucoseValue);
 
         int batteryCGM = cgm.getBattery(CGMBLEAddress, CGMSN);
-        setCGMBattery(batteryCGM);
 
-        XMLManager.insert(APXML, StateProps.Glucose.toString(), String.valueOf(newGlucoseValue));
-        XMLManager.insert(APXML, StateProps.GlucoseTime.toString(), DateTime.now());
-        getState().setXML(APXML);
+        getState().setCurrentGlucose(newGlucoseValue);
+        getState().setCurrentGlucoseDateTime(DateTime.now());
+        getState().getDeviceData().setCGMBattery(batteryCGM);
+
+        // Update View
+        setLatestEGV(newGlucoseValue);
+        setCGMBattery(batteryCGM);
 
         /*
         *   Control Algorithm
@@ -84,16 +84,17 @@ public class StepController implements Runnable {
         Log.i(TAG, "insulinDose = " + insulinDose);
         Log.i(TAG, "glucagonDose = " + glucagonDose);
 
-        XMLManager.insert(doseXML, StateProps.Insulin.toString(), String.valueOf(insulinDose));
-        XMLManager.insert(doseXML, StateProps.Glucagon.toString(), String.valueOf(glucagonDose));
-        getState().getDoseData().setXML(doseXML);
+        // HOLISTIC CHECKS GO HERE
+
+        getState().getDoseData().setCurrentInsulinDose(insulinDose);
+        getState().getDoseData().setCurrentGlugaconDose(glucagonDose);
 
         /*
         *   Pump(s)
         */
 
-        String insulinPumpSN = XMLManager.getValue(deviceXML, StateProps.InsulinPumpSerialNumber.toString());
-        String glucagonPumpSN = XMLManager.getValue(deviceXML, StateProps.GlucagonPumpSerialNumber.toString());
+        String insulinPumpSN = getState().getDeviceData().getInsulinPumpSerialNumber();
+        String glucagonPumpSN = getState().getDeviceData().getGlucagonPumpSerialNumber();
 
         Log.i(TAG, "insulinPumpSN = " + insulinPumpSN);
         Log.i(TAG, "glucagonPumpSN = " + glucagonPumpSN);
@@ -107,8 +108,19 @@ public class StepController implements Runnable {
         int batteryPumpInsulin = pump.getBatteryInsulinPump(insulinPumpSN);
         int batteryPumpGlucagon = pump.getBatteryGlucagonPump(glucagonPumpSN);
 
+        // Save battery to state
+        getState().getDeviceData().setInsulinPumpBattery(batteryPumpInsulin);
+        getState().getDeviceData().setGlucagonPumpBattery(batteryPumpGlucagon);
+
+        // Update battery to UI
         setBatteryPumpInsulin(batteryPumpInsulin);
         setBatteryPumpGlucagon(batteryPumpGlucagon);
+
+        /**
+         *  Check with System Monitor
+         */
+
+        (new Thread(new SystemMonitor(context, getState()))).start();
 
         /*
         *   Save to Datastore

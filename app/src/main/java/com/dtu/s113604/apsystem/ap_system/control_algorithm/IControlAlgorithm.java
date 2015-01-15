@@ -1,6 +1,6 @@
 package com.dtu.s113604.apsystem.ap_system.control_algorithm;
 
-import com.dtu.s113604.apsystem.models.APStateModel;
+import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
 
 /**
  * Created by marksv on 06/12/14.

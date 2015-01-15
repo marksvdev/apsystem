@@ -1,5 +1,8 @@
 package com.dtu.s113604.apsystem.ap_system.pump_module;
 
+import com.dtu.s113604.apsystem.mocked_hardware.MGlucagonPump;
+import com.dtu.s113604.apsystem.mocked_hardware.MInsulinPump;
+
 import java.util.Random;
 
 /**
@@ -27,11 +30,11 @@ public class Pump implements IPump {
 
     @Override
     public int getBatteryInsulinPump(String insulinPumpSerialNumber) {
-        return rand.nextInt((95 - 40) + 1) + 40;
+        return MInsulinPump.getInstance().getBattery();
     }
 
     @Override
     public int getBatteryGlucagonPump(String glucagonPumpSerialNumber) {
-        return rand.nextInt((100 - 67) + 1) + 67;
+        return MGlucagonPump.getInstance().getBattery();
     }
 }

@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -10,13 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:stretchColumns="1"
-        android:shrinkColumns="0">
+        android:shrinkColumns="0"
+        android:id="@+id/tableLayout">
 
         <TableRow>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Latest EGV Value  " />
+                android:text="Latest EGV Value  "
+                android:id="@+id/LatestEGVLabel"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -32,7 +34,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CGM Battery" />
+                android:text="CGM Battery"
+                android:id="@+id/CGMBatteryLabel"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -44,7 +47,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Insulin Pump Battery" />
+                android:text="Insulin Pump Battery"
+                android:id="@+id/InsulinBatteryLabel"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,7 +60,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Glucagon Pump Battery    " />
+                android:text="Glucagon Pump Battery    "
+                android:id="@+id/GlucagonBatteryLabel"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,8 +76,13 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:fadeScrollbars="false">
+        android:layout_height="wrap_content"
+
+        android:fadeScrollbars="false"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignRight="@+id/tableLayout"
+        android:layout_alignEnd="@+id/tableLayout"
+        android:layout_below="@+id/tableLayout">
 
         <TableLayout
             android:layout_width="match_parent"
@@ -139,6 +149,22 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Carb Ratio"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="2"
+                    android:id="@+id/USER_CARB_RATIO"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Insulin Sensitivity"/>
                 <EditText
                     android:layout_width="wrap_content"
@@ -159,6 +185,62 @@
                     android:id="@+id/USER_GLUCAGON_SENS"/>
             </TableRow>
 
+            <TableRow>
+                <TextView />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Insulin Reaction Time"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="2"
+                    android:id="@+id/USER_INSULIN_REACTION_TIME"/>
+            </TableRow>
+
+
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Glucagon Reaction Time"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="2"
+                    android:id="@+id/USER_GLUCAGON_REACTION_TIME"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Threshold MIN"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="80"
+                    android:id="@+id/USER_THRESHOLD_MIN"/>
+            </TableRow>
+
+
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Threshold MAX"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="120"
+                    android:id="@+id/USER_THRESHOLD_MAX"/>
+            </TableRow>
+
 
         </TableLayout>
 
@@ -169,19 +251,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        >
+        android:layout_alignParentBottom="true"
+        android:id="@+id/linearLayout">
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Settings"
             android:id="@+id/btnSave"
             android:onClick="onClickSaveSettings"/>
-        </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
         <ToggleButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -189,6 +266,8 @@
             android:textOn="AP ON"
             android:onClick="onClickAPOnOff"/>
         </LinearLayout>
+
+
 
    <!--
    <LinearLayout
@@ -211,4 +290,4 @@
             android:onClick="onClickStop"/>
         </LinearLayout>
    -->
-</LinearLayout>
+</RelativeLayout>

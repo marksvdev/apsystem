@@ -1,4 +1,4 @@
-package com.dtu.s113604.apsystem.models;
+package com.dtu.s113604.apsystem.ap_system.models;
 
 import org.w3c.dom.Document;
 
@@ -22,7 +22,11 @@ public class APStateModel {
 
     private long id;
     private String datetime;
-    private Document stateProperties;
+
+    private int currentGlucose;
+    private String currentGlucoseDateTime;
+    private int lastGlucose;
+    private String lastGlucoseDateTime;
 
     private DoseDataModel doseData;
     private DeviceDataModel deviceData;
@@ -34,11 +38,41 @@ public class APStateModel {
         this.patientParameters = patientParameters;
         this.algorithmState = algorithmState;
         this.doseData = doseData;
-        stateProperties = XMLManager.generateNewDocument();
     }
 
-    public APStateModel () {
-        stateProperties = XMLManager.generateNewDocument();
+    public APStateModel() {}
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
+    }
+
+    public int getCurrentGlucose() {
+        return currentGlucose;
+    }
+
+    public void setCurrentGlucose(int currentGlucose) {
+        setLastGlucose(this.currentGlucose);
+        this.currentGlucose = currentGlucose;
+    }
+
+    public int getLastGlucose() {
+        return lastGlucose;
+    }
+
+    public void setLastGlucose(int lastGlucose) {
+        this.lastGlucose = lastGlucose;
     }
 
     public DoseDataModel getDoseData() {
@@ -73,50 +107,20 @@ public class APStateModel {
         this.algorithmState = algorithmState;
     }
 
-    public String getDatetime() {
-        return datetime;
+    public String getCurrentGlucoseDateTime() {
+        return currentGlucoseDateTime;
     }
 
-    public void setDatetime(String datetime) {
-        this.datetime = datetime;
+    public void setCurrentGlucoseDateTime(String currentGlucoseDateTime) {
+        setLastGlucoseDateTime(this.currentGlucoseDateTime);
+        this.currentGlucoseDateTime = currentGlucoseDateTime;
     }
 
-    public long getId() {
-        return id;
+    private String getLastGlucoseDateTime() {
+        return lastGlucoseDateTime;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getStateProperties() {
-        return XMLManager.DocumentToString(stateProperties);
-    }
-
-    public void setStateProperties(String state) {
-        stateProperties = XMLManager.loadXMLFromString(state);
-    }
-
-    public Document getXML() {
-        return stateProperties;
-    }
-
-    public void setXML(Document doc) {
-        stateProperties = doc;
-    }
-
-
-
-    @Override
-    public String toString() {
-        return "APStateModel{" +
-                "id=" + id +
-                ", datetime='" + datetime + '\'' +
-                ", stateProperties='" + stateProperties + '\'' +
-                ", doseData=" + doseData +
-                ", deviceData=" + deviceData +
-                ", patientParameters=" + patientParameters +
-                ", algorithmState=" + algorithmState +
-                '}';
+    public void setLastGlucoseDateTime(String lastGlucoseDateTime) {
+        this.lastGlucoseDateTime = lastGlucoseDateTime;
     }
 }

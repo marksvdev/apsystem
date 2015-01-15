@@ -10,6 +10,10 @@ public enum StateProps {
     InsulinPumpSerialNumber("InsulinPumpSerialNumber"),
     GlucagonPumpSerialNumber("GlucagonPumpSerialNumber"),
 
+    CGMBattery("CGMBattery"),
+    InsulinPumpBattery("InsulinPumpBattery"),
+    GlucagonPumpBattery("GlucagonPumpBattery"),
+
     // ap
     Glucose("Glucose"),
     GlucoseTime("GlucoseTime"),
@@ -21,6 +25,8 @@ public enum StateProps {
     // user
     InsulinSensitivity("InsulinSensitivity"),
     GlucagonSensitivity("GlucagonSensitivity"),
+    GlucoseThresholdMax("GlucoseThresholdMax"),
+    GlucoseThresholdMin("GlucoseThresholdMin"),
 
     ;
 

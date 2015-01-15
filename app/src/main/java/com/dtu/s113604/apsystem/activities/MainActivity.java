@@ -5,8 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,32 +19,32 @@ import android.widget.ToggleButton;
 
 import com.dtu.s113604.apsystem.R;
 import com.dtu.s113604.apsystem.ap_system.StepController;
-import com.dtu.s113604.apsystem.data_store.localstorage_module.APDBOpenHelper;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.APStateDataSource;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.IAPStateDataSource;
-import com.dtu.s113604.apsystem.models.APStateModel;
-import com.dtu.s113604.apsystem.models.AlgorithmStateModel;
-import com.dtu.s113604.apsystem.models.DeviceDataModel;
-import com.dtu.s113604.apsystem.models.DoseDataModel;
-import com.dtu.s113604.apsystem.models.UserDataModel;
+import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
+import com.dtu.s113604.apsystem.ap_system.models.AlgorithmStateModel;
+import com.dtu.s113604.apsystem.ap_system.models.DeviceDataModel;
+import com.dtu.s113604.apsystem.ap_system.models.DoseDataModel;
+import com.dtu.s113604.apsystem.ap_system.models.UserDataModel;
 
-import org.w3c.dom.Document;
-
-import utils.DateTime;
 import utils.MSGCode;
 import utils.StateManager;
-import utils.StateProps;
-import utils.XMLManager;
 
 
 public class MainActivity extends Activity {
 
+    private static final String ALARMTAG = "ALARM";
+
     private Button btnSave;
-    private TextView textViewEGV, textViewBatteryCGM,
-            textViewBatteryPumpInsulin, textViewBatteryPumpGlucagon;
+    private TextView textViewEGVValue, textViewBatteryCGM,
+            textViewBatteryPumpInsulin, textViewBatteryPumpGlucagon,
+            textViewEGVLabel, textViewCGMBatteryLabel, textViewGlucagonBatteryLabel, textViewInsulinBatteryLabel;
     private EditText editTextCGM_SN, editTextCGM_BLE,
             editTextPumpInsulinSN, editTextPumpGlucagonSN,
-            editTextUserInsulinSens, editTextUserGlucagonSens;
+            editTextUserInsulinSens, editTextUserGlucagonSens,
+            editTextthresholdMin, editTextthresholdMax,
+            editTextCarbRatio, editTextInsulinReactionTime,
+            editTextGlucagonReactionTime;
 
 
     @Override
@@ -50,10 +54,15 @@ public class MainActivity extends Activity {
 
         btnSave = (Button) findViewById(R.id.btnSave);
 
-        textViewEGV = (TextView) findViewById(R.id.LatestEGVValue);
+        textViewEGVValue = (TextView) findViewById(R.id.LatestEGVValue);
         textViewBatteryCGM = (TextView) findViewById(R.id.CGM_Battery);
         textViewBatteryPumpInsulin = (TextView) findViewById(R.id.PUMP_Battery_Insulin);
         textViewBatteryPumpGlucagon = (TextView) findViewById(R.id.PUMP_Battery_Glucagon);
+        textViewEGVLabel = (TextView) findViewById(R.id.LatestEGVLabel);
+        textViewCGMBatteryLabel = (TextView) findViewById(R.id.CGMBatteryLabel);
+        textViewGlucagonBatteryLabel = (TextView) findViewById(R.id.GlucagonBatteryLabel);
+        textViewInsulinBatteryLabel = (TextView) findViewById(R.id.InsulinBatteryLabel);
+
 
         editTextCGM_SN = (EditText) findViewById(R.id.CGM_SN);
         editTextCGM_BLE = (EditText) findViewById(R.id.CGM_BLE);
@@ -61,13 +70,40 @@ public class MainActivity extends Activity {
         editTextPumpGlucagonSN = (EditText) findViewById(R.id.PUMP_GLUCAGON_SN);
         editTextUserInsulinSens = (EditText) findViewById(R.id.USER_INSULIN_SENS);
         editTextUserGlucagonSens = (EditText) findViewById(R.id.USER_GLUCAGON_SENS);
+        editTextthresholdMax = (EditText) findViewById(R.id.USER_THRESHOLD_MAX);
+        editTextthresholdMin = (EditText) findViewById(R.id.USER_THRESHOLD_MIN);
+        editTextCarbRatio = (EditText) findViewById(R.id.USER_CARB_RATIO);
+        editTextInsulinReactionTime = (EditText) findViewById(R.id.USER_INSULIN_REACTION_TIME);
+        editTextGlucagonReactionTime = (EditText) findViewById(R.id.USER_GLUCAGON_REACTION_TIME);
 
-        editTextCGM_SN.setText(editTextCGM_SN.getHint());
-        editTextCGM_BLE.setText(editTextCGM_BLE.getHint());
-        editTextPumpInsulinSN.setText(editTextPumpInsulinSN.getHint());
-        editTextPumpGlucagonSN.setText(editTextPumpGlucagonSN.getHint());
-        editTextUserInsulinSens.setText(editTextUserInsulinSens.getHint());
-        editTextUserGlucagonSens.setText(editTextUserGlucagonSens.getHint());
+
+        createNewState();
+
+        editTextCGM_SN.setText(StateManager.getInstance().getState().getDeviceData().getCGMSerialNumber());
+        editTextCGM_BLE.setText(StateManager.getInstance().getState().getDeviceData().getCGMBLEAddress());
+        editTextPumpInsulinSN.setText(StateManager.getInstance().getState().getDeviceData().getInsulinPumpSerialNumber());
+        editTextPumpGlucagonSN.setText(StateManager.getInstance().getState().getDeviceData().getGlucagonPumpSerialNumber());
+        editTextUserInsulinSens.setText(StateManager.getInstance().getState().getPatientParameters().getInsulinSensitivity() + "");
+        editTextUserGlucagonSens.setText(StateManager.getInstance().getState().getPatientParameters().getGlucagonSensitivity() + "");
+        editTextthresholdMax.setText(StateManager.getInstance().getState().getPatientParameters().getGlucoseThresholdMax() + "");
+        editTextthresholdMin.setText(StateManager.getInstance().getState().getPatientParameters().getGlucoseThresholdMin() + "");
+        editTextCarbRatio.setText(StateManager.getInstance().getState().getPatientParameters().getCarbRatio() + "");
+        editTextInsulinReactionTime.setText(StateManager.getInstance().getState().getPatientParameters().getInsulinReactionTime() + "");
+        editTextGlucagonReactionTime.setText(StateManager.getInstance().getState().getPatientParameters().getGlucagonReactionTime() + "");
+
+//        editTextCGM_SN.setText(editTextCGM_SN.getHint());
+//        editTextCGM_BLE.setText(editTextCGM_BLE.getHint());
+//        editTextPumpInsulinSN.setText(editTextPumpInsulinSN.getHint());
+//        editTextPumpGlucagonSN.setText(editTextPumpGlucagonSN.getHint());
+//        editTextUserInsulinSens.setText(editTextUserInsulinSens.getHint());
+//        editTextUserGlucagonSens.setText(editTextUserGlucagonSens.getHint());
+//        editTextthresholdMax.setText(editTextthresholdMax.getHint());
+//        editTextthresholdMin.setText(editTextthresholdMin.getHint());
+//        editTextCarbRatio.setText(editTextCarbRatio.getHint());
+//        editTextInsulinReactionTime.setText(editTextInsulinReactionTime.getHint());
+//        editTextGlucagonReactionTime.setText(editTextGlucagonReactionTime.getHint());
+
+
     }
 
     @Override
@@ -77,8 +113,8 @@ public class MainActivity extends Activity {
         registerReceiver(mUpdateViewReceiver, makeUpdateViewIntentFilter());
     }
 
-    public void setTextViewEGV(String value) {
-        textViewEGV.setText(value + " mg/dl");
+    public void setTextViewEGVValue(String value) {
+        textViewEGVValue.setText(value + " mg/dl");
     }
 
     public void setTextViewBatteryCGM(String value) {
@@ -100,7 +136,7 @@ public class MainActivity extends Activity {
 
             if(action.equals(MSGCode.UPDATE_EGV.toString())) {
                 String EGV = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
-                setTextViewEGV(EGV);
+                setTextViewEGVValue(EGV);
             }
             else if(action.equals(MSGCode.UPDATE_BATTERY_CGM.toString())) {
                 String batteryCGM = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
@@ -114,15 +150,70 @@ public class MainActivity extends Activity {
                 String batteryPumpGlucagon = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
                 setGetTextViewBatteryPumpGlucagon(batteryPumpGlucagon);
             }
+            else if(action.equals(MSGCode.ALARM_BATTERY_CGM.toString())) {
+                // CGM BATTERY LOW
+                Log.i(ALARMTAG, "CGM BATTERY LOW");
+                alarmCGMBattery();
+
+            }
+            else if(action.equals(MSGCode.ALARM_BATTERY_GLUCAGON.toString())) {
+                // GLUCAGON PUMP BATTERY LOW
+                Log.i(ALARMTAG, "GLUCAGON PUMP BATTERY LOW");
+                alarmGlucagonPumpBattery();
+            }
+            else if(action.equals(MSGCode.ALARM_BATTERY_INSULIN.toString())) {
+                // INSULIN PUMP BATTERY LOW
+                Log.i(ALARMTAG, "INSULIN PUMP BATTERY LOW");
+                alarmInsulinPumpBattery();
+            }
+            else if(action.equals(MSGCode.ALARM_GLUCOSE_HIGH.toString())) {
+                // GLUCOSE HIGH
+                Log.i(ALARMTAG, "GLUCOSE LEVEL TOO HIGH");
+                alarmGlucoseHigh();
+            }
+            else if(action.equals(MSGCode.ALARM_GLUCOSE_LOW.toString())) {
+                // GLUCOSE LOW
+                Log.i(ALARMTAG, "GLUCOSE LEVEL TOO LOW");
+                alarmGlucoseLow();
+            }
+            else if(action.equals(MSGCode.ALARM_GLUCOSE_NORMAL.toString())) {
+                // GLUCOSE LEVEL NORMAL
+                alarmGlucoseNormal();
+            }
+            else if(action.equals(MSGCode.ALARM_BATTERY_GLUCAGON_OK.toString())) {
+                // GLUCAGON PUMP BATTERY OK
+                alarmGlucagonPumpBatteryOk();
+            }
+            else if(action.equals(MSGCode.ALARM_BATTERY_INSULIN_OK.toString())) {
+                // INSULIN PUMP BATTERY OK
+                alarmInsulinPumpBatteryOk();
+            }
+            else if(action.equals(MSGCode.ALARM_BATTERY_CGM_OK.toString())) {
+                // CGM BATTERY OK
+                alarmCGMBatteryOk();
+            }
         }
     };
 
     private static IntentFilter makeUpdateViewIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
+
         intentFilter.addAction(MSGCode.UPDATE_EGV.toString());
         intentFilter.addAction(MSGCode.UPDATE_BATTERY_CGM.toString());
         intentFilter.addAction(MSGCode.UPDATE_BATTERY_PUMP_INSULIN.toString());
         intentFilter.addAction(MSGCode.UPDATE_BATTERY_PUMP_GLUCAGON.toString());
+
+        intentFilter.addAction(MSGCode.ALARM_GLUCOSE_HIGH.toString());
+        intentFilter.addAction(MSGCode.ALARM_BATTERY_CGM.toString());
+        intentFilter.addAction(MSGCode.ALARM_BATTERY_INSULIN.toString());
+        intentFilter.addAction(MSGCode.ALARM_BATTERY_GLUCAGON.toString());
+        intentFilter.addAction(MSGCode.ALARM_GLUCOSE_LOW.toString());
+
+        intentFilter.addAction(MSGCode.ALARM_GLUCOSE_NORMAL.toString());
+        intentFilter.addAction(MSGCode.ALARM_BATTERY_INSULIN_OK.toString());
+        intentFilter.addAction(MSGCode.ALARM_BATTERY_GLUCAGON_OK.toString());
+        intentFilter.addAction(MSGCode.ALARM_BATTERY_CGM_OK.toString());
+
         return intentFilter;
     }
 
@@ -136,8 +227,20 @@ public class MainActivity extends Activity {
 
         InsulinSensitivity = editTextUserInsulinSens.getText().toString();
         GlucagonSensitivity = editTextUserGlucagonSens.getText().toString();
+        GlucoseThresholdMax = editTextthresholdMax.getText().toString();
+        GlucoseThresholdMin = editTextthresholdMin.getText().toString();
+        CarbRatio = editTextCarbRatio.getText().toString();
+        InsulinReactionTime = editTextInsulinReactionTime.getText().toString();
+        GlucagonReactionTime = editTextGlucagonReactionTime.getText().toString();
 
-        editState();
+        APStateModel state = StateManager.getInstance().getState();
+
+//        if (state == null) { createNewState(); return;}
+
+//        state = StateManager.getInstance().getState();
+
+        insertUserSettings(state.getPatientParameters());
+        insertDeviceSettings(state.getDeviceData());
     }
 
     // device
@@ -149,6 +252,11 @@ public class MainActivity extends Activity {
     // user
     private String InsulinSensitivity;
     private String GlucagonSensitivity;
+    private String GlucoseThresholdMax;
+    private String GlucoseThresholdMin;
+    private String CarbRatio;
+    private String InsulinReactionTime;
+    private String GlucagonReactionTime;
 
     public void onClickAPOnOff(View view) {
         if (((ToggleButton) view).isChecked()) {
@@ -163,21 +271,11 @@ public class MainActivity extends Activity {
             }
 
             (new Thread(new StepController(this))).start();
+
         } else {
             // handle toggle off
             StepController.isRunning = false;
         }
-    }
-
-    private void editState() {
-        APStateModel state = StateManager.getInstance().getState();
-
-        if (state == null) { createNewState(); }
-
-        state = StateManager.getInstance().getState();
-
-        state.getPatientParameters().setXML(insertUserSettings(state.getPatientParameters().getXML()));
-        state.getDeviceData().setXML(insertDeviceSettings(state.getDeviceData().getXML()));
     }
 
     private void createNewState() {
@@ -188,35 +286,119 @@ public class MainActivity extends Activity {
             StateManager.getInstance().setState(loadedState);
         } else {
 
-            Document deviceDoc = XMLManager.generateNewDocument();
-            deviceDoc = insertDeviceSettings(deviceDoc);
+            DeviceDataModel deviceData = new DeviceDataModel();
+            insertDeviceSettings(deviceData);
 
-            Document userDoc = XMLManager.generateNewDocument();
-            userDoc = insertUserSettings(userDoc);
-
-            String data = XMLManager.DocumentToString(userDoc);
+            UserDataModel userData = new UserDataModel();
+            insertUserSettings(userData);
 
             APStateModel state = new APStateModel();
             state.setAlgorithmState(new AlgorithmStateModel());
-            state.setPatientParameters(new UserDataModel(userDoc));
+            state.setPatientParameters(userData);
             state.setDoseData(new DoseDataModel());
-            state.setDeviceData(new DeviceDataModel(deviceDoc));
+            state.setDeviceData(deviceData);
 
             StateManager.getInstance().setState(state);
         }
     }
 
-    private Document insertDeviceSettings(Document deviceDoc) {
-        XMLManager.insert(deviceDoc, StateProps.CGMBLEAddress.toString(), CGMBLEAddress);
-        XMLManager.insert(deviceDoc, StateProps.CGMSerialNumber.toString(), CGMSN);
-        XMLManager.insert(deviceDoc, StateProps.InsulinPumpSerialNumber.toString(), InsulinPumpSN);
-        XMLManager.insert(deviceDoc, StateProps.GlucagonPumpSerialNumber.toString(), GlucagonPumpSN);
-        return deviceDoc;
+    private void insertDeviceSettings(DeviceDataModel deviceData) {
+        deviceData.setCGMBLEAddress(CGMBLEAddress);
+        deviceData.setCGMSerialNumber(CGMSN);
+        deviceData.setInsulinPumpSerialNumber(InsulinPumpSN);
+        deviceData.setGlucagonPumpSerialNumber(GlucagonPumpSN);
     }
 
-    private Document insertUserSettings(Document userDoc) {
-        XMLManager.insert(userDoc, StateProps.InsulinSensitivity.toString(), InsulinSensitivity);
-        XMLManager.insert(userDoc, StateProps.GlucagonSensitivity.toString(), GlucagonSensitivity);
-        return userDoc;
+    private void insertUserSettings(UserDataModel userData) {
+        userData.setInsulinSensitivity(Integer.valueOf(InsulinSensitivity));
+        userData.setGlucagonSensitivity(Integer.valueOf(GlucagonSensitivity));
+
+        userData.setCarbRatio(Integer.valueOf(CarbRatio));
+        userData.setInsulinReactionTime(Integer.valueOf(InsulinReactionTime));
+        userData.setGlucagonReactionTime(Integer.valueOf(GlucagonReactionTime));
+
+        userData.setGlucoseThresholdMax(Integer.valueOf(GlucoseThresholdMax));
+        userData.setGlucoseThresholdMin(Integer.valueOf(GlucoseThresholdMin));
     }
+
+    private void alarmGlucoseLow() {
+        // audio (sound)
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        r.play();
+
+        // view (update view)
+
+        textViewEGVLabel.setBackgroundResource(R.color.red);
+        textViewEGVValue.setBackgroundResource(R.color.red);
+
+
+        // feel (vibrate)
+
+        // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // Vibrate for 300 milliseconds
+        //v.vibrate(300);
+        v.vibrate(1000);
+    }
+
+    private void alarmGlucoseHigh() {
+        // audio (sound)
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        r.play();
+
+        // view (update view)
+
+        textViewEGVLabel.setBackgroundResource(R.color.yellow);
+        textViewEGVValue.setBackgroundResource(R.color.yellow);
+
+
+        // feel (vibrate)
+
+        // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // Vibrate for 300 milliseconds
+        //v.vibrate(300);
+        v.vibrate(1000);
+    }
+
+    private void alarmGlucoseNormal() {
+        textViewEGVLabel.setBackgroundResource(R.color.white);
+        textViewEGVValue.setBackgroundResource(R.color.white);
+    }
+
+    private void alarmInsulinPumpBattery() {
+        textViewInsulinBatteryLabel.setBackgroundResource(R.color.red);
+        textViewBatteryPumpInsulin.setBackgroundResource(R.color.red);
+    }
+
+    private void alarmGlucagonPumpBattery() {
+        textViewGlucagonBatteryLabel.setBackgroundResource(R.color.red);
+        textViewBatteryPumpGlucagon.setBackgroundResource(R.color.red);
+    }
+
+    private void alarmCGMBattery() {
+        textViewBatteryCGM.setBackgroundResource(R.color.red);
+        textViewCGMBatteryLabel.setBackgroundResource(R.color.red);
+    }
+
+    private void alarmInsulinPumpBatteryOk() {
+        textViewInsulinBatteryLabel.setBackgroundResource(R.color.white);
+        textViewBatteryPumpInsulin.setBackgroundResource(R.color.white);
+    }
+
+    private void alarmGlucagonPumpBatteryOk() {
+        textViewGlucagonBatteryLabel.setBackgroundResource(R.color.white);
+        textViewBatteryPumpGlucagon.setBackgroundResource(R.color.white);
+    }
+
+    private void alarmCGMBatteryOk() {
+        textViewBatteryCGM.setBackgroundResource(R.color.white);
+        textViewCGMBatteryLabel.setBackgroundResource(R.color.white);
+    }
+
+
 }

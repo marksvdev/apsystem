@@ -2,6 +2,8 @@ package com.dtu.s113604.apsystem.ap_system.cgm_module;
 
 import android.util.Log;
 
+import com.dtu.s113604.apsystem.mocked_hardware.MCGM;
+
 import java.util.Random;
 
 /**
@@ -17,14 +19,14 @@ public class CGM implements ICGM {
 
     @Override
     public int getGlucoseValue(String bleAddress, String SN) {
-        Log.i(TAG, "Waiting for next reading...(DEBUG: 10 sec)");
+        Log.i(TAG, "Waiting for next reading...(DEBUG: 2 sec)");
         try {
-            Thread.sleep(10 * 1000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        return rand.nextInt((10 - 1) + 1) + 1;
+        return MCGM.getInstance().getEgv();
     }
 
     @Override
@@ -34,6 +36,6 @@ public class CGM implements ICGM {
 
     @Override
     public int getBattery(String bleAddress, String SN) {
-        return rand.nextInt((100 - 80) + 1) + 80;
+        return MCGM.getInstance().getBattery();
     }
 }
