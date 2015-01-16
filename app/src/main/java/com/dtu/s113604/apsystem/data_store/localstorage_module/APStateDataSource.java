@@ -40,13 +40,9 @@ public class APStateDataSource implements IAPStateDataSource {
         database = dbhelper.getReadableDatabase();
     }
 
-    // Closes the connection to the database
-    public void close() {
-        Log.i(TAG, "Database closed");
-        dbhelper.close();
-    }
-
-    // Creates a new AP State entry in the database
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public APStateModel save(APStateModel apState) {
         openWriteable();
@@ -100,7 +96,9 @@ public class APStateDataSource implements IAPStateDataSource {
         ContentValues apStateValues = new ContentValues();
         apStateValues.put(APDBOpenHelper.COLUMN_AP_DATETIME, now);
         apStateValues.put(APDBOpenHelper.COLUMN_AP_CURRENT_GLUCOSE, apState.getCurrentGlucose());
+        apStateValues.put(APDBOpenHelper.COLUMN_AP_CURRENT_GLUCOSE_DATETIME, apState.getCurrentGlucoseDateTime());
         apStateValues.put(APDBOpenHelper.COLUMN_AP_LAST_GLUCOSE, apState.getLastGlucose());
+        apStateValues.put(APDBOpenHelper.COLUMN_AP_LAST_GLUCOSE_DATETIME, apState.getLastGlucoseDateTime());
 
         apStateValues.put(APDBOpenHelper.COLUMN_ALGORITHM_State_FK_ID, apState.getAlgorithmState().getId());
         apStateValues.put(APDBOpenHelper.COLUMN_DEVICE_DATA_FK_ID, apState.getDeviceData().getId());
@@ -115,7 +113,16 @@ public class APStateDataSource implements IAPStateDataSource {
         return apState;
     }
 
-    // Loads the latest stored AP State from the database
+
+    // Closes the connection to the database
+    public void close() {
+        Log.i(TAG, "Database closed");
+        dbhelper.close();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public APStateModel load() {
         openReadable();

@@ -3,39 +3,41 @@ package com.dtu.s113604.apsystem.ap_system;
 import android.content.Context;
 import android.util.Log;
 
+import com.dtu.s113604.apsystem.activities.MainActivity;
+import com.dtu.s113604.apsystem.activities.ViewWrapper;
 import com.dtu.s113604.apsystem.ap_system.cgm_module.CGM;
 import com.dtu.s113604.apsystem.ap_system.cgm_module.ICGM;
 import com.dtu.s113604.apsystem.ap_system.control_algorithm.ControlAlgorithm;
 import com.dtu.s113604.apsystem.ap_system.control_algorithm.IControlAlgorithm;
+import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
 import com.dtu.s113604.apsystem.ap_system.pump_module.IPump;
 import com.dtu.s113604.apsystem.ap_system.pump_module.Pump;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.APStateDataSource;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.IAPStateDataSource;
-import com.dtu.s113604.apsystem.ap_system.models.*;
 import com.dtu.s113604.apsystem.system_monitor.SystemMonitor;
-
-
-import org.w3c.dom.Document;
 
 import utils.Broadcast;
 import utils.DateTime;
 import utils.MSGCode;
-import utils.StateManager;
-import utils.StateProps;
-import utils.XMLManager;
 
 /**
  * Created by marksv on 06/12/14.
  */
-public class StepController implements Runnable {
+public class StepController extends Thread {
 
     public static String TAG = "StepController";
     public static boolean isRunning = false;
 
     private Context context;
 
+    private APStateModel state;
+
     public StepController(Context context) {
         this.context = context;
+
+        state = createNewState();
+
+        ((MainActivity)context).updateView(state.makeWrapper());
     }
 
     @Override
@@ -43,7 +45,25 @@ public class StepController implements Runnable {
         isRunning = true;
 
         while(isRunning) {
+
+            if (newState) {
+                state.makeUnWrap(getWrapper());
+                newState = false;
+            }
+
             executeSteps();
+        }
+    }
+
+    private APStateModel createNewState() {
+        IAPStateDataSource dataSource = new APStateDataSource(context);
+        APStateModel loadedState = dataSource.load();
+
+        if (loadedState != null) {
+            return loadedState;
+        } else {
+
+            throw new RuntimeException("Resource not found");
         }
     }
 
@@ -56,8 +76,8 @@ public class StepController implements Runnable {
         *   CGM
         */
 
-        String CGMBLEAddress = getState().getDeviceData().getCGMBLEAddress();
-        String CGMSN = getState().getDeviceData().getCGMSerialNumber();
+        String CGMBLEAddress = state.getDeviceData().getCGMBLEAddress();
+        String CGMSN = state.getDeviceData().getCGMSerialNumber();
         Log.i(TAG, "CGMBLEAddress = " + CGMBLEAddress);
         Log.i(TAG, "CGMSN = " + CGMSN);
 
@@ -66,9 +86,9 @@ public class StepController implements Runnable {
 
         int batteryCGM = cgm.getBattery(CGMBLEAddress, CGMSN);
 
-        getState().setCurrentGlucose(newGlucoseValue);
-        getState().setCurrentGlucoseDateTime(DateTime.now());
-        getState().getDeviceData().setCGMBattery(batteryCGM);
+        state.setCurrentGlucose(newGlucoseValue);
+        state.setCurrentGlucoseDateTime(DateTime.now());
+        state.getDeviceData().setCGMBattery(batteryCGM);
 
         // Update View
         setLatestEGV(newGlucoseValue);
@@ -78,23 +98,23 @@ public class StepController implements Runnable {
         *   Control Algorithm
         */
 
-        int insulinDose = control.calculateInsulinDose(getState());
-        int glucagonDose = control.calculateGlucagonDose(getState());
+        int insulinDose = control.calculateInsulinDose(state);
+        int glucagonDose = control.calculateGlucagonDose(state);
 
         Log.i(TAG, "insulinDose = " + insulinDose);
         Log.i(TAG, "glucagonDose = " + glucagonDose);
 
         // HOLISTIC CHECKS GO HERE
 
-        getState().getDoseData().setCurrentInsulinDose(insulinDose);
-        getState().getDoseData().setCurrentGlugaconDose(glucagonDose);
+        state.getDoseData().setCurrentInsulinDose(insulinDose);
+        state.getDoseData().setCurrentGlugaconDose(glucagonDose);
 
         /*
         *   Pump(s)
         */
 
-        String insulinPumpSN = getState().getDeviceData().getInsulinPumpSerialNumber();
-        String glucagonPumpSN = getState().getDeviceData().getGlucagonPumpSerialNumber();
+        String insulinPumpSN = state.getDeviceData().getInsulinPumpSerialNumber();
+        String glucagonPumpSN = state.getDeviceData().getGlucagonPumpSerialNumber();
 
         Log.i(TAG, "insulinPumpSN = " + insulinPumpSN);
         Log.i(TAG, "glucagonPumpSN = " + glucagonPumpSN);
@@ -109,8 +129,8 @@ public class StepController implements Runnable {
         int batteryPumpGlucagon = pump.getBatteryGlucagonPump(glucagonPumpSN);
 
         // Save battery to state
-        getState().getDeviceData().setInsulinPumpBattery(batteryPumpInsulin);
-        getState().getDeviceData().setGlucagonPumpBattery(batteryPumpGlucagon);
+        state.getDeviceData().setInsulinPumpBattery(batteryPumpInsulin);
+        state.getDeviceData().setGlucagonPumpBattery(batteryPumpGlucagon);
 
         // Update battery to UI
         setBatteryPumpInsulin(batteryPumpInsulin);
@@ -120,14 +140,31 @@ public class StepController implements Runnable {
          *  Check with System Monitor
          */
 
-        (new Thread(new SystemMonitor(context, getState()))).start();
+        (new Thread(new SystemMonitor(context, state))).start();
 
         /*
         *   Save to Datastore
         */
 
         IAPStateDataSource dataSource = new APStateDataSource(context);
-        dataSource.save(getState());
+        dataSource.save(state);
+    }
+
+    private static ViewWrapper wrapper;
+    private boolean newState = false;
+
+    public void updateState(ViewWrapper newViewWrapper) {
+        setWrapper(newViewWrapper);
+        newState = true;
+    }
+
+
+    private synchronized ViewWrapper getWrapper() {
+        return wrapper;
+    }
+
+    private synchronized void setWrapper(ViewWrapper wrapper) {
+        this.wrapper = wrapper;
     }
 
     private void setLatestEGV(int value) {
@@ -145,8 +182,9 @@ public class StepController implements Runnable {
         Broadcast.broadcastUpdate(context, MSGCode.UPDATE_BATTERY_PUMP_GLUCAGON.toString(), String.valueOf(value));
     }
 
-    private APStateModel getState() {
-        return StateManager.getInstance().getState();
+    public void stopLoop() {
+        isRunning = false;
     }
+
 
 }

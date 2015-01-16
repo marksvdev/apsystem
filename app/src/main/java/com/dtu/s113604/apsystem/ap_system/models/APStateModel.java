@@ -1,5 +1,7 @@
 package com.dtu.s113604.apsystem.ap_system.models;
 
+import com.dtu.s113604.apsystem.activities.ViewWrapper;
+
 import org.w3c.dom.Document;
 
 import utils.XMLManager;
@@ -23,10 +25,10 @@ public class APStateModel {
     private long id;
     private String datetime;
 
-    private int currentGlucose;
-    private String currentGlucoseDateTime;
-    private int lastGlucose;
-    private String lastGlucoseDateTime;
+    private int currentGlucose = 0;
+    private String currentGlucoseDateTime = "";
+    private int lastGlucose = 0;
+    private String lastGlucoseDateTime = "";
 
     private DoseDataModel doseData;
     private DeviceDataModel deviceData;
@@ -116,11 +118,45 @@ public class APStateModel {
         this.currentGlucoseDateTime = currentGlucoseDateTime;
     }
 
-    private String getLastGlucoseDateTime() {
+    public String getLastGlucoseDateTime() {
         return lastGlucoseDateTime;
     }
 
     public void setLastGlucoseDateTime(String lastGlucoseDateTime) {
         this.lastGlucoseDateTime = lastGlucoseDateTime;
+    }
+
+    public ViewWrapper makeWrapper() {
+        // make wrapper
+        ViewWrapper wrapper = new ViewWrapper();
+
+        wrapper.setCGMBLEAddress(getDeviceData().getCGMBLEAddress());
+        wrapper.setCGMSN(getDeviceData().getCGMSerialNumber());
+        wrapper.setInsulinPumpSN(getDeviceData().getInsulinPumpSerialNumber());
+        wrapper.setGlucagonPumpSN(getDeviceData().getGlucagonPumpSerialNumber());
+        wrapper.setInsulinSensitivity(String.valueOf(getPatientParameters().getInsulinSensitivity()));
+        wrapper.setGlucagonSensitivity(String.valueOf(getPatientParameters().getGlucagonSensitivity()));
+        wrapper.setGlucoseThresholdMax(String.valueOf(getPatientParameters().getGlucoseThresholdMax()));
+        wrapper.setGlucoseThresholdMin(String.valueOf(getPatientParameters().getGlucoseThresholdMin()));
+        wrapper.setCarbRatio(String.valueOf(getPatientParameters().getCarbRatio()));
+        wrapper.setInsulinReactionTime(String.valueOf(getPatientParameters().getInsulinReactionTime()));
+        wrapper.setGlucagonReactionTime(String.valueOf(getPatientParameters().getGlucagonReactionTime()));
+
+        return wrapper;
+    }
+
+    public void makeUnWrap(ViewWrapper wrapper) {
+        getDeviceData().setCGMBLEAddress(wrapper.getCGMBLEAddress());
+        getDeviceData().setCGMSerialNumber(wrapper.getCGMSN());
+        getDeviceData().setInsulinPumpSerialNumber(wrapper.getInsulinPumpSN());
+        getDeviceData().setGlucagonPumpSerialNumber(wrapper.getGlucagonPumpSN());
+        getPatientParameters().setInsulinSensitivity(Integer.valueOf(wrapper.getInsulinSensitivity()));
+        getPatientParameters().setGlucagonSensitivity(Integer.valueOf(wrapper.getGlucagonSensitivity()));
+        getPatientParameters().setGlucoseThresholdMax(Integer.valueOf(wrapper.getGlucoseThresholdMax()));
+        getPatientParameters().setGlucoseThresholdMin(Integer.valueOf(wrapper.getGlucoseThresholdMin()));
+        getPatientParameters().setCarbRatio(Integer.valueOf(wrapper.getCarbRatio()));
+        getPatientParameters().setInsulinReactionTime(Integer.valueOf(wrapper.getInsulinSensitivity()));
+        getPatientParameters().setGlucagonReactionTime(Integer.valueOf(wrapper.getGlucagonReactionTime()));
+
     }
 }

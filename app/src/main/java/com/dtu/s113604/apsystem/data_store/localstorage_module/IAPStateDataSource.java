@@ -6,9 +6,16 @@ import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
  * Created by marksv on 07/12/14.
  */
 public interface IAPStateDataSource {
-    // Creates a new AP State entry in the database
+    /**
+     * Creates a new AP State entry in the database
+     * @param state
+     * @return
+     */
     APStateModel save(APStateModel state);
 
-    // Loads the latest stored AP State from the database
+    /**
+     * Loads the latest stored AP State from the database
+     * @return
+     */
     APStateModel load();
 }

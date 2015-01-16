@@ -19,16 +19,9 @@ import android.widget.ToggleButton;
 
 import com.dtu.s113604.apsystem.R;
 import com.dtu.s113604.apsystem.ap_system.StepController;
-import com.dtu.s113604.apsystem.data_store.localstorage_module.APStateDataSource;
-import com.dtu.s113604.apsystem.data_store.localstorage_module.IAPStateDataSource;
-import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
-import com.dtu.s113604.apsystem.ap_system.models.AlgorithmStateModel;
-import com.dtu.s113604.apsystem.ap_system.models.DeviceDataModel;
-import com.dtu.s113604.apsystem.ap_system.models.DoseDataModel;
-import com.dtu.s113604.apsystem.ap_system.models.UserDataModel;
 
 import utils.MSGCode;
-import utils.StateManager;
+//import utils.StateManager;
 
 
 public class MainActivity extends Activity {
@@ -46,6 +39,7 @@ public class MainActivity extends Activity {
             editTextCarbRatio, editTextInsulinReactionTime,
             editTextGlucagonReactionTime;
 
+    private StepController thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,34 +70,21 @@ public class MainActivity extends Activity {
         editTextInsulinReactionTime = (EditText) findViewById(R.id.USER_INSULIN_REACTION_TIME);
         editTextGlucagonReactionTime = (EditText) findViewById(R.id.USER_GLUCAGON_REACTION_TIME);
 
+        thread = new StepController(this);
+    }
 
-        createNewState();
-
-        editTextCGM_SN.setText(StateManager.getInstance().getState().getDeviceData().getCGMSerialNumber());
-        editTextCGM_BLE.setText(StateManager.getInstance().getState().getDeviceData().getCGMBLEAddress());
-        editTextPumpInsulinSN.setText(StateManager.getInstance().getState().getDeviceData().getInsulinPumpSerialNumber());
-        editTextPumpGlucagonSN.setText(StateManager.getInstance().getState().getDeviceData().getGlucagonPumpSerialNumber());
-        editTextUserInsulinSens.setText(StateManager.getInstance().getState().getPatientParameters().getInsulinSensitivity() + "");
-        editTextUserGlucagonSens.setText(StateManager.getInstance().getState().getPatientParameters().getGlucagonSensitivity() + "");
-        editTextthresholdMax.setText(StateManager.getInstance().getState().getPatientParameters().getGlucoseThresholdMax() + "");
-        editTextthresholdMin.setText(StateManager.getInstance().getState().getPatientParameters().getGlucoseThresholdMin() + "");
-        editTextCarbRatio.setText(StateManager.getInstance().getState().getPatientParameters().getCarbRatio() + "");
-        editTextInsulinReactionTime.setText(StateManager.getInstance().getState().getPatientParameters().getInsulinReactionTime() + "");
-        editTextGlucagonReactionTime.setText(StateManager.getInstance().getState().getPatientParameters().getGlucagonReactionTime() + "");
-
-//        editTextCGM_SN.setText(editTextCGM_SN.getHint());
-//        editTextCGM_BLE.setText(editTextCGM_BLE.getHint());
-//        editTextPumpInsulinSN.setText(editTextPumpInsulinSN.getHint());
-//        editTextPumpGlucagonSN.setText(editTextPumpGlucagonSN.getHint());
-//        editTextUserInsulinSens.setText(editTextUserInsulinSens.getHint());
-//        editTextUserGlucagonSens.setText(editTextUserGlucagonSens.getHint());
-//        editTextthresholdMax.setText(editTextthresholdMax.getHint());
-//        editTextthresholdMin.setText(editTextthresholdMin.getHint());
-//        editTextCarbRatio.setText(editTextCarbRatio.getHint());
-//        editTextInsulinReactionTime.setText(editTextInsulinReactionTime.getHint());
-//        editTextGlucagonReactionTime.setText(editTextGlucagonReactionTime.getHint());
-
-
+    public void updateView(ViewWrapper wrapper) {
+        editTextCGM_SN.setText(wrapper.getCGMSN());
+        editTextCGM_BLE.setText(wrapper.getCGMBLEAddress());
+        editTextPumpInsulinSN.setText(wrapper.getInsulinPumpSN());
+        editTextPumpGlucagonSN.setText(wrapper.getGlucagonPumpSN());
+        editTextUserInsulinSens.setText(wrapper.getInsulinSensitivity() + "");
+        editTextUserGlucagonSens.setText(wrapper.getGlucagonSensitivity() + "");
+        editTextthresholdMax.setText(wrapper.getGlucoseThresholdMax() + "");
+        editTextthresholdMin.setText(wrapper.getGlucoseThresholdMin() + "");
+        editTextCarbRatio.setText(wrapper.getCarbRatio() + "");
+        editTextInsulinReactionTime.setText(wrapper.getInsulinReactionTime() + "");
+        editTextGlucagonReactionTime.setText(wrapper.getGlucagonReactionTime() + "");
     }
 
     @Override
@@ -118,7 +99,7 @@ public class MainActivity extends Activity {
     }
 
     public void setTextViewBatteryCGM(String value) {
-        textViewBatteryCGM.setText(value  + "%");
+        textViewBatteryCGM.setText(value + "%");
     }
 
     public void setTextViewBatteryPumpInsulin(String value) {
@@ -134,61 +115,49 @@ public class MainActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-            if(action.equals(MSGCode.UPDATE_EGV.toString())) {
+            if (action.equals(MSGCode.UPDATE_EGV.toString())) {
                 String EGV = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
                 setTextViewEGVValue(EGV);
-            }
-            else if(action.equals(MSGCode.UPDATE_BATTERY_CGM.toString())) {
+            } else if (action.equals(MSGCode.UPDATE_BATTERY_CGM.toString())) {
                 String batteryCGM = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
                 setTextViewBatteryCGM(batteryCGM);
-            }
-            else if(action.equals(MSGCode.UPDATE_BATTERY_PUMP_INSULIN.toString())) {
+            } else if (action.equals(MSGCode.UPDATE_BATTERY_PUMP_INSULIN.toString())) {
                 String batteryPumpInsulin = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
                 setTextViewBatteryPumpInsulin(batteryPumpInsulin);
-            }
-            else if(action.equals(MSGCode.UPDATE_BATTERY_PUMP_GLUCAGON.toString())) {
+            } else if (action.equals(MSGCode.UPDATE_BATTERY_PUMP_GLUCAGON.toString())) {
                 String batteryPumpGlucagon = intent.getStringExtra(MSGCode.EXTRA_DATA.toString());
                 setGetTextViewBatteryPumpGlucagon(batteryPumpGlucagon);
-            }
-            else if(action.equals(MSGCode.ALARM_BATTERY_CGM.toString())) {
+            } else if (action.equals(MSGCode.ALARM_BATTERY_CGM.toString())) {
                 // CGM BATTERY LOW
                 Log.i(ALARMTAG, "CGM BATTERY LOW");
                 alarmCGMBattery();
 
-            }
-            else if(action.equals(MSGCode.ALARM_BATTERY_GLUCAGON.toString())) {
+            } else if (action.equals(MSGCode.ALARM_BATTERY_GLUCAGON.toString())) {
                 // GLUCAGON PUMP BATTERY LOW
                 Log.i(ALARMTAG, "GLUCAGON PUMP BATTERY LOW");
                 alarmGlucagonPumpBattery();
-            }
-            else if(action.equals(MSGCode.ALARM_BATTERY_INSULIN.toString())) {
+            } else if (action.equals(MSGCode.ALARM_BATTERY_INSULIN.toString())) {
                 // INSULIN PUMP BATTERY LOW
                 Log.i(ALARMTAG, "INSULIN PUMP BATTERY LOW");
                 alarmInsulinPumpBattery();
-            }
-            else if(action.equals(MSGCode.ALARM_GLUCOSE_HIGH.toString())) {
+            } else if (action.equals(MSGCode.ALARM_GLUCOSE_HIGH.toString())) {
                 // GLUCOSE HIGH
                 Log.i(ALARMTAG, "GLUCOSE LEVEL TOO HIGH");
                 alarmGlucoseHigh();
-            }
-            else if(action.equals(MSGCode.ALARM_GLUCOSE_LOW.toString())) {
+            } else if (action.equals(MSGCode.ALARM_GLUCOSE_LOW.toString())) {
                 // GLUCOSE LOW
                 Log.i(ALARMTAG, "GLUCOSE LEVEL TOO LOW");
                 alarmGlucoseLow();
-            }
-            else if(action.equals(MSGCode.ALARM_GLUCOSE_NORMAL.toString())) {
+            } else if (action.equals(MSGCode.ALARM_GLUCOSE_NORMAL.toString())) {
                 // GLUCOSE LEVEL NORMAL
                 alarmGlucoseNormal();
-            }
-            else if(action.equals(MSGCode.ALARM_BATTERY_GLUCAGON_OK.toString())) {
+            } else if (action.equals(MSGCode.ALARM_BATTERY_GLUCAGON_OK.toString())) {
                 // GLUCAGON PUMP BATTERY OK
                 alarmGlucagonPumpBatteryOk();
-            }
-            else if(action.equals(MSGCode.ALARM_BATTERY_INSULIN_OK.toString())) {
+            } else if (action.equals(MSGCode.ALARM_BATTERY_INSULIN_OK.toString())) {
                 // INSULIN PUMP BATTERY OK
                 alarmInsulinPumpBatteryOk();
-            }
-            else if(action.equals(MSGCode.ALARM_BATTERY_CGM_OK.toString())) {
+            } else if (action.equals(MSGCode.ALARM_BATTERY_CGM_OK.toString())) {
                 // CGM BATTERY OK
                 alarmCGMBatteryOk();
             }
@@ -220,6 +189,10 @@ public class MainActivity extends Activity {
     // STATE INITIALIZATION
 
     public void onClickSaveSettings(View view) {
+        thread.updateState(saveSettings());
+    }
+
+    private ViewWrapper saveSettings() {
         CGMBLEAddress = editTextCGM_BLE.getText().toString();
         CGMSN = editTextCGM_SN.getText().toString();
         InsulinPumpSN = editTextPumpInsulinSN.getText().toString();
@@ -233,14 +206,25 @@ public class MainActivity extends Activity {
         InsulinReactionTime = editTextInsulinReactionTime.getText().toString();
         GlucagonReactionTime = editTextGlucagonReactionTime.getText().toString();
 
-        APStateModel state = StateManager.getInstance().getState();
+        //APStateModel state = StateManager.getInstance().getState();
 
-//        if (state == null) { createNewState(); return;}
+//        insertUserSettings(state.getPatientParameters());
+//        insertDeviceSettings(state.getDeviceData());
 
-//        state = StateManager.getInstance().getState();
+        ViewWrapper wrapper = new ViewWrapper();
+        wrapper.setCGMBLEAddress(CGMBLEAddress);
+        wrapper.setCGMSN(CGMSN);
+        wrapper.setInsulinPumpSN(InsulinPumpSN);
+        wrapper.setGlucagonPumpSN(GlucagonPumpSN);
+        wrapper.setInsulinSensitivity(InsulinSensitivity);
+        wrapper.setGlucagonSensitivity(GlucagonSensitivity);
+        wrapper.setGlucoseThresholdMax(GlucoseThresholdMax);
+        wrapper.setGlucoseThresholdMin(GlucoseThresholdMin);
+        wrapper.setCarbRatio(CarbRatio);
+        wrapper.setInsulinReactionTime(InsulinReactionTime);
+        wrapper.setGlucagonReactionTime(GlucagonReactionTime);
 
-        insertUserSettings(state.getPatientParameters());
-        insertDeviceSettings(state.getDeviceData());
+        return wrapper;
     }
 
     // device
@@ -261,64 +245,12 @@ public class MainActivity extends Activity {
     public void onClickAPOnOff(View view) {
         if (((ToggleButton) view).isChecked()) {
             // handle toggle on
-
-            if (StepController.isRunning) {
-                return;
-            }
-
-            if (StateManager.getInstance().getState() == null) {
-                createNewState();
-            }
-
-            (new Thread(new StepController(this))).start();
-
+            thread.updateState(saveSettings());
+            thread.start();
         } else {
             // handle toggle off
-            StepController.isRunning = false;
+            thread.stopLoop();
         }
-    }
-
-    private void createNewState() {
-        IAPStateDataSource dataSource = new APStateDataSource(this);
-        APStateModel loadedState = dataSource.load();
-
-        if (loadedState != null) {
-            StateManager.getInstance().setState(loadedState);
-        } else {
-
-            DeviceDataModel deviceData = new DeviceDataModel();
-            insertDeviceSettings(deviceData);
-
-            UserDataModel userData = new UserDataModel();
-            insertUserSettings(userData);
-
-            APStateModel state = new APStateModel();
-            state.setAlgorithmState(new AlgorithmStateModel());
-            state.setPatientParameters(userData);
-            state.setDoseData(new DoseDataModel());
-            state.setDeviceData(deviceData);
-
-            StateManager.getInstance().setState(state);
-        }
-    }
-
-    private void insertDeviceSettings(DeviceDataModel deviceData) {
-        deviceData.setCGMBLEAddress(CGMBLEAddress);
-        deviceData.setCGMSerialNumber(CGMSN);
-        deviceData.setInsulinPumpSerialNumber(InsulinPumpSN);
-        deviceData.setGlucagonPumpSerialNumber(GlucagonPumpSN);
-    }
-
-    private void insertUserSettings(UserDataModel userData) {
-        userData.setInsulinSensitivity(Integer.valueOf(InsulinSensitivity));
-        userData.setGlucagonSensitivity(Integer.valueOf(GlucagonSensitivity));
-
-        userData.setCarbRatio(Integer.valueOf(CarbRatio));
-        userData.setInsulinReactionTime(Integer.valueOf(InsulinReactionTime));
-        userData.setGlucagonReactionTime(Integer.valueOf(GlucagonReactionTime));
-
-        userData.setGlucoseThresholdMax(Integer.valueOf(GlucoseThresholdMax));
-        userData.setGlucoseThresholdMin(Integer.valueOf(GlucoseThresholdMin));
     }
 
     private void alarmGlucoseLow() {
@@ -360,8 +292,7 @@ public class MainActivity extends Activity {
         // Get instance of Vibrator from current Context
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        // Vibrate for 300 milliseconds
-        //v.vibrate(300);
+        // Vibrate for 1000 milliseconds
         v.vibrate(1000);
     }
 

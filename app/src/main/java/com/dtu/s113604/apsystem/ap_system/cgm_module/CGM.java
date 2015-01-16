@@ -19,9 +19,9 @@ public class CGM implements ICGM {
 
     @Override
     public int getGlucoseValue(String bleAddress, String SN) {
-        Log.i(TAG, "Waiting for next reading...(DEBUG: 2 sec)");
+        Log.i(TAG, "Waiting for next reading...(DEBUG: 3 sec)");
         try {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -29,10 +29,10 @@ public class CGM implements ICGM {
         return MCGM.getInstance().getEgv();
     }
 
-    @Override
-    public String getInfo(String bleAddress, String SN) {
-        return info;
-    }
+//    @Override
+//    public String getInfo(String bleAddress, String SN) {
+//        return info;
+//    }
 
     @Override
     public int getBattery(String bleAddress, String SN) {
