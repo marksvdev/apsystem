@@ -3,13 +3,9 @@ package com.dtu.s113604.apsystem.system_monitor;
 import android.content.Context;
 
 import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
-import com.dtu.s113604.apsystem.data_store.localstorage_module.APStateDataSource;
-import com.dtu.s113604.apsystem.data_store.localstorage_module.IAPStateDataSource;
 
 import utils.Broadcast;
 import utils.MSGCode;
-import utils.StateProps;
-import utils.XMLManager;
 
 /**
  * Created by marksv on 15/01/15.
@@ -29,6 +25,10 @@ public class SystemMonitor implements Runnable {
     public SystemMonitor(Context context, APStateModel state) {
         this.context = context;
         this.state = state;
+    }
+
+    public SystemMonitor(Context context) {
+        this.context = context;
     }
 
     @Override

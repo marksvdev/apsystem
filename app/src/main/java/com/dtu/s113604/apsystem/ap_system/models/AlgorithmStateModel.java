@@ -1,9 +1,5 @@
 package com.dtu.s113604.apsystem.ap_system.models;
 
-import org.w3c.dom.Document;
-
-import utils.XMLManager;
-
 /**
  * Created by marksv on 06/12/14.
  */

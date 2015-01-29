@@ -130,7 +130,7 @@ public class APStateDataSource implements IAPStateDataSource {
         // Loading APStateModel
 
         if (isDBEmpty(APDBOpenHelper.TABLE_AP_STATE)) {
-            return null;
+            return createNewState();
         }
 
         APStateModel apStateModel = new APStateModel();
@@ -248,5 +248,20 @@ public class APStateDataSource implements IAPStateDataSource {
         } else {
             return false;
         }
+    }
+
+    private APStateModel createNewState() {
+        AlgorithmStateModel algo = new AlgorithmStateModel();
+        DeviceDataModel device = new DeviceDataModel();
+        DoseDataModel dose = new DoseDataModel();
+        UserDataModel user = new UserDataModel();
+        APStateModel state = new APStateModel();
+
+        state.setAlgorithmState(algo);
+        state.setDeviceData(device);
+        state.setDoseData(dose);
+        state.setPatientParameters(user);
+
+        return state;
     }
 }

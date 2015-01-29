@@ -1,9 +1,5 @@
 package com.dtu.s113604.apsystem.ap_system.models;
 
-import org.w3c.dom.Document;
-
-import utils.XMLManager;
-
 /**
  * Created by marksv on 06/12/14.
  */
@@ -17,14 +13,14 @@ public class UserDataModel {
 
     private long id;
 
-    private int carbRatio;
-    private int insulinSensitivity;
-    private int insulinReactionTime;
-    private int glucagonSensitivity;
-    private int glucagonReactionTime;
+    private int carbRatio = 0;
+    private int insulinSensitivity = 0;
+    private int insulinReactionTime = 0;
+    private int glucagonSensitivity = 0;
+    private int glucagonReactionTime = 0;
 
-    private int glucoseThresholdMax;
-    private int glucoseThresholdMin;
+    private int glucoseThresholdMax = 0;
+    private int glucoseThresholdMin = 0;
 
 
     public UserDataModel() {

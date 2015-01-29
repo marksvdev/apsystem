@@ -1,23 +1,19 @@
 package com.dtu.s113604.apsystem.ap_system.models;
 
-import org.w3c.dom.Document;
-
-import utils.XMLManager;
-
 /**
  * Created by marksv on 06/12/14.
  */
 public class DeviceDataModel {
     private long id;
 
-    private String CGMBLEAddress;
-    private String CGMSerialNumber;
-    private String InsulinPumpSerialNumber;
-    private String GlucagonPumpSerialNumber;
+    private String CGMBLEAddress = "";
+    private String CGMSerialNumber = "";
+    private String InsulinPumpSerialNumber = "";
+    private String GlucagonPumpSerialNumber = "";
 
-    private int CGMBattery;
-    private int InsulinPumpBattery;
-    private int GlucagonPumpBattery;
+    private int CGMBattery = 100;
+    private int InsulinPumpBattery = 100;
+    private int GlucagonPumpBattery = 100;
 
     public DeviceDataModel() {}
 

@@ -14,7 +14,8 @@ import com.dtu.s113604.apsystem.ap_system.pump_module.IPump;
 import com.dtu.s113604.apsystem.ap_system.pump_module.Pump;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.APStateDataSource;
 import com.dtu.s113604.apsystem.data_store.localstorage_module.IAPStateDataSource;
-import com.dtu.s113604.apsystem.system_monitor.SystemMonitor;
+import com.dtu.s113604.apsystem.system_monitor.IISystemMonitor;
+import com.dtu.s113604.apsystem.system_monitor.InitSystemMonitor;
 
 import utils.Broadcast;
 import utils.DateTime;
@@ -26,16 +27,20 @@ import utils.MSGCode;
 public class StepController extends Thread {
 
     public static String TAG = "StepController";
-    public static boolean isRunning = false;
+    private static boolean isRunning = false;
 
     private Context context;
 
     private APStateModel state;
 
+    private static ViewWrapper wrapper;
+    private boolean newState = false;
+//    private static final Object lock = new Object();
+
     public StepController(Context context) {
         this.context = context;
 
-        state = createNewState();
+        state = createState();
 
         ((MainActivity)context).updateView(state.makeWrapper());
     }
@@ -55,22 +60,11 @@ public class StepController extends Thread {
         }
     }
 
-    private APStateModel createNewState() {
-        IAPStateDataSource dataSource = new APStateDataSource(context);
-        APStateModel loadedState = dataSource.load();
-
-        if (loadedState != null) {
-            return loadedState;
-        } else {
-
-            throw new RuntimeException("Resource not found");
-        }
-    }
-
     private void executeSteps() {
         ICGM cgm = new CGM();
         IControlAlgorithm control = new ControlAlgorithm();
         IPump pump = new Pump();
+        IISystemMonitor systemMonitor = new InitSystemMonitor();
 
         /*
         *   CGM
@@ -140,7 +134,7 @@ public class StepController extends Thread {
          *  Check with System Monitor
          */
 
-        (new Thread(new SystemMonitor(context, state))).start();
+        systemMonitor.startSystemMonitor(context, state);
 
         /*
         *   Save to Datastore
@@ -150,21 +144,35 @@ public class StepController extends Thread {
         dataSource.save(state);
     }
 
-    private static ViewWrapper wrapper;
-    private boolean newState = false;
+    private APStateModel createState() {
+        IAPStateDataSource dataSource = new APStateDataSource(context);
+        APStateModel loadedState = dataSource.load();
+
+        if (loadedState != null) {
+            return loadedState;
+        } else {
+
+            throw new RuntimeException("Resource not found");
+        }
+    }
+
+    private static final Object lock = new Object();
 
     public void updateState(ViewWrapper newViewWrapper) {
         setWrapper(newViewWrapper);
         newState = true;
     }
 
-
-    private synchronized ViewWrapper getWrapper() {
-        return wrapper;
+    private ViewWrapper getWrapper() {
+        synchronized (lock) {
+            return wrapper;
+        }
     }
 
-    private synchronized void setWrapper(ViewWrapper wrapper) {
-        this.wrapper = wrapper;
+    private void setWrapper(ViewWrapper wrapper) {
+        synchronized (lock) {
+            this.wrapper = wrapper;
+        }
     }
 
     private void setLatestEGV(int value) {
@@ -185,6 +193,4 @@ public class StepController extends Thread {
     public void stopLoop() {
         isRunning = false;
     }
-
-
 }

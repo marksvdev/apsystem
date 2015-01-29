@@ -2,12 +2,7 @@ package com.dtu.s113604.apsystem.ap_system.control_algorithm;
 
 import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
 import com.dtu.s113604.apsystem.ap_system.models.AlgorithmStateModel;
-import com.dtu.s113604.apsystem.ap_system.models.DoseDataModel;
 import com.dtu.s113604.apsystem.ap_system.models.UserDataModel;
-
-import java.util.Random;
-
-import utils.XMLManager;
 
 /**
  * Created by marksv on 06/12/14.

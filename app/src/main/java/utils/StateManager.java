@@ -7,8 +7,8 @@
 // */
 //public class StateManager {
 //
-//    private static StateManager instance = null;
 //    private APStateModel state;
+//    private static StateManager instance = null;
 //
 //    protected StateManager() {
 //

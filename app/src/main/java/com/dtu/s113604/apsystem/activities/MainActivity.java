@@ -21,13 +21,14 @@ import com.dtu.s113604.apsystem.R;
 import com.dtu.s113604.apsystem.ap_system.StepController;
 
 import utils.MSGCode;
-//import utils.StateManager;
 
 
 public class MainActivity extends Activity {
 
     private static final String ALARMTAG = "ALARM";
+    private StepController thread;
 
+    //region // UI component declarations...
     private Button btnSave;
     private TextView textViewEGVValue, textViewBatteryCGM,
             textViewBatteryPumpInsulin, textViewBatteryPumpGlucagon,
@@ -39,13 +40,29 @@ public class MainActivity extends Activity {
             editTextCarbRatio, editTextInsulinReactionTime,
             editTextGlucagonReactionTime;
 
-    private StepController thread;
+    private ToggleButton toogleap;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initUIComponents();
+
+        thread = new StepController(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        registerReceiver(mUpdateViewReceiver, makeUpdateViewIntentFilter());
+    }
+
+
+
+    private void initUIComponents() {
         btnSave = (Button) findViewById(R.id.btnSave);
 
         textViewEGVValue = (TextView) findViewById(R.id.LatestEGVValue);
@@ -70,7 +87,7 @@ public class MainActivity extends Activity {
         editTextInsulinReactionTime = (EditText) findViewById(R.id.USER_INSULIN_REACTION_TIME);
         editTextGlucagonReactionTime = (EditText) findViewById(R.id.USER_GLUCAGON_REACTION_TIME);
 
-        thread = new StepController(this);
+        toogleap = (ToggleButton) findViewById(R.id.aptoggle);
     }
 
     public void updateView(ViewWrapper wrapper) {
@@ -85,13 +102,6 @@ public class MainActivity extends Activity {
         editTextCarbRatio.setText(wrapper.getCarbRatio() + "");
         editTextInsulinReactionTime.setText(wrapper.getInsulinReactionTime() + "");
         editTextGlucagonReactionTime.setText(wrapper.getGlucagonReactionTime() + "");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        registerReceiver(mUpdateViewReceiver, makeUpdateViewIntentFilter());
     }
 
     public void setTextViewEGVValue(String value) {
@@ -245,11 +255,22 @@ public class MainActivity extends Activity {
     public void onClickAPOnOff(View view) {
         if (((ToggleButton) view).isChecked()) {
             // handle toggle on
+            if (thread.getState() != Thread.State.NEW) {
+                thread = new StepController(this);
+            }
             thread.updateState(saveSettings());
             thread.start();
+
         } else {
             // handle toggle off
+            toogleap.setEnabled(false);
             thread.stopLoop();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            toogleap.setEnabled(true);
         }
     }
 

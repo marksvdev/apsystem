@@ -264,7 +264,8 @@
             android:layout_height="wrap_content"
             android:textOff="AP OFF"
             android:textOn="AP ON"
-            android:onClick="onClickAPOnOff"/>
+            android:onClick="onClickAPOnOff"
+            android:id="@+id/aptoggle"/>
         </LinearLayout>
 
 

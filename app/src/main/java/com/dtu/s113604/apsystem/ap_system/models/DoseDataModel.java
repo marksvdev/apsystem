@@ -1,9 +1,5 @@
 package com.dtu.s113604.apsystem.ap_system.models;
 
-import org.w3c.dom.Document;
-
-import utils.XMLManager;
-
 /**
  * Created by marksv on 06/12/14.
  */
@@ -11,11 +7,11 @@ public class DoseDataModel {
 
     private long id;
 
-    private int currentInsulinDose;
-    private int lastInsulinDose;
+    private int currentInsulinDose = 0;
+    private int lastInsulinDose = 0;
 
-    private int currentGlugaconDose;
-    private int lastGlucagonDose;
+    private int currentGlugaconDose = 0;
+    private int lastGlucagonDose = 0;
 
     public DoseDataModel() {
     }

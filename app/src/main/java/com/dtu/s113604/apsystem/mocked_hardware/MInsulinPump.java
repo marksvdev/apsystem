@@ -4,7 +4,7 @@ package com.dtu.s113604.apsystem.mocked_hardware;
  * Created by marksv on 09/01/15.
  */
 public class MInsulinPump {
-    private static int battery = 30;
+    private static int battery = 67;
     private static int batteryDecay = 0;
 
     private static MInsulinPump instance = null;
@@ -27,7 +27,7 @@ public class MInsulinPump {
 
         if (batteryDecay >= 2) {
             batteryDecay = 0;
-            battery -= 5;
+            battery -= 1;
             return battery;
         }
 

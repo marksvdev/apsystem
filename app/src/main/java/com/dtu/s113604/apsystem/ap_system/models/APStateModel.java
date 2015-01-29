@@ -2,10 +2,6 @@ package com.dtu.s113604.apsystem.ap_system.models;
 
 import com.dtu.s113604.apsystem.activities.ViewWrapper;
 
-import org.w3c.dom.Document;
-
-import utils.XMLManager;
-
 /**
  * Created by marksv on 06/12/14.
  */
@@ -25,9 +21,9 @@ public class APStateModel {
     private long id;
     private String datetime;
 
-    private int currentGlucose = 0;
+    private int currentGlucose = 90;
     private String currentGlucoseDateTime = "";
-    private int lastGlucose = 0;
+    private int lastGlucose = 90;
     private String lastGlucoseDateTime = "";
 
     private DoseDataModel doseData;
@@ -157,6 +153,5 @@ public class APStateModel {
         getPatientParameters().setCarbRatio(Integer.valueOf(wrapper.getCarbRatio()));
         getPatientParameters().setInsulinReactionTime(Integer.valueOf(wrapper.getInsulinSensitivity()));
         getPatientParameters().setGlucagonReactionTime(Integer.valueOf(wrapper.getGlucagonReactionTime()));
-
     }
 }
