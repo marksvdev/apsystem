@@ -2,7 +2,7 @@ package com.dtu.s113604.apsystem.system_monitor;
 
 import android.content.Context;
 
-import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
+import com.dtu.s113604.apsystem.ap_system.models2.APState;
 
 /**
  * Created by marksv on 21/01/15.
@@ -13,5 +13,5 @@ public interface IISystemMonitor {
      * @param context
      * @param state
      */
-    void startSystemMonitor(Context context, APStateModel state);
+    void startSystemMonitor(Context context, APState state);
 }

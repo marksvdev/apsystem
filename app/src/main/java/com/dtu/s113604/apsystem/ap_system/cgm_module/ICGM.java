@@ -1,5 +1,8 @@
 package com.dtu.s113604.apsystem.ap_system.cgm_module;
 
+import com.dtu.s113604.apsystem.ap_system.models2.Battery;
+import com.dtu.s113604.apsystem.ap_system.models2.Glucose;
+
 /**
  * Created by marksv on 06/12/14.
  */
@@ -10,7 +13,7 @@ public interface ICGM {
      * @param SN
      * @return
      */
-    int getGlucoseValue(String bleAddress, String SN);
+    Glucose getGlucoseValue(String bleAddress, String SN);
 
     /**
      * Gets the battery level of the CGM
@@ -18,5 +21,5 @@ public interface ICGM {
      * @PARAM SN
      * @RETURN
      */
-    int getBattery(String bleAddress, String SN);
+    Battery getBattery(String bleAddress, String SN);
 }

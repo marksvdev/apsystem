@@ -2,7 +2,8 @@ package com.dtu.s113604.apsystem.system_monitor;
 
 import android.content.Context;
 
-import com.dtu.s113604.apsystem.ap_system.models.APStateModel;
+import com.dtu.s113604.apsystem.ap_system.models2.APState;
+import com.dtu.s113604.apsystem.ap_system.models2.DeviceType;
 
 import utils.Broadcast;
 import utils.MSGCode;
@@ -13,7 +14,7 @@ import utils.MSGCode;
 public class SystemMonitor implements Runnable {
 
     private static String TAG = "SystemMonitor";
-    private APStateModel state;
+    private APState state;
 
     private Context context;
 
@@ -22,7 +23,7 @@ public class SystemMonitor implements Runnable {
     private static final int BATTERY_WARN1 = 5;
     private static final int BATTERY_WARN0 = 0;
 
-    public SystemMonitor(Context context, APStateModel state) {
+    public SystemMonitor(Context context, APState state) {
         this.context = context;
         this.state = state;
     }
@@ -34,13 +35,13 @@ public class SystemMonitor implements Runnable {
     @Override
     public void run() {
 
-        int batteryCGM = state.getDeviceData().getCGMBattery();
-        int batteryPumpGlucagon = state.getDeviceData().getGlucagonPumpBattery();
-        int batteryPumpInsulin = state.getDeviceData().getInsulinPumpBattery();
+        int batteryCGM = state.getDevice(DeviceType.CGM).getlBattery().getLevel();
+        int batteryPumpGlucagon = state.getDevice(DeviceType.GLUCAGON_PUMP).getlBattery().getLevel();
+        int batteryPumpInsulin = state.getDevice(DeviceType.INSULIN_PUMP).getlBattery().getLevel();
 
-        int glucose = state.getCurrentGlucose();
-        int glucoseMax = state.getPatientParameters().getGlucoseThresholdMax();
-        int glucoseMin = state.getPatientParameters().getGlucoseThresholdMin();
+        int glucose = state.getUser().getlGlucose().getLevel();
+        int glucoseMax = state.getUser().getMaxGlucose();
+        int glucoseMin = state.getUser().getMinGlucose();
 
         // Check Battery levels
 
