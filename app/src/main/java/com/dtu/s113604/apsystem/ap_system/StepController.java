@@ -37,14 +37,7 @@ public class StepController extends Thread {
 
     private Context context;
 
-    //private APStateModel state;
-
     private APState state2;
-
-    private Device cgm;
-    private Device insulin;
-    private Device glucagon;
-    private User user;
 
     private static ViewWrapper wrapper;
     private boolean newState = false;
@@ -52,11 +45,8 @@ public class StepController extends Thread {
     public StepController(Context context) {
         this.context = context;
 
-//        state = createState();
         state2 = createState2();
 
-
-//        ((MainActivity)context).updateView(state.makeWrapper());
         ((MainActivity) context).updateView(state2.makeWrapper());
     }
 
@@ -67,7 +57,6 @@ public class StepController extends Thread {
         while (isRunning) {
 
             if (newState) {
-//                state.makeUnWrap(getWrapper());
                 state2.makeUnWrap(getWrapper());
                 newState = false;
             }
@@ -115,9 +104,6 @@ public class StepController extends Thread {
 
         // HOLISTIC CHECKS GO HERE
 
-//        state.getDoseData().setCurrentInsulinDose(insulinDose);
-//        state.getDoseData().setCurrentGlugaconDose(glucagonDose);
-
         /*
         *   Pump(s)
         */
@@ -161,17 +147,6 @@ public class StepController extends Thread {
         dataSource.save(state2, DateTime.now());
     }
 
-//    private APStateModel createState() {
-//        IAPStateDataSource dataSource = new APStateDataSource(context);
-//        APStateModel loadedState = dataSource.load();
-//
-//        if (loadedState != null) {
-//            return loadedState;
-//        } else {
-//            throw new RuntimeException("Resource not found");
-//        }
-//    }
-
     private APState createState2() {
         IAPStateDataSource2 dataSource = new APStateDataSource2(context);
         APState loadedState = dataSource.load(10);
@@ -179,7 +154,6 @@ public class StepController extends Thread {
         if (loadedState != null) {
             return loadedState;
         } else {
-            // TODO Create new state
             throw new RuntimeException("Resource not found");
         }
     }

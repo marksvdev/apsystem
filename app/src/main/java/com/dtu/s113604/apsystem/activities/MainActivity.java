@@ -196,8 +196,6 @@ public class MainActivity extends Activity {
         return intentFilter;
     }
 
-    // STATE INITIALIZATION
-
     public void onClickSaveSettings(View view) {
         thread.updateState(saveSettings());
     }
@@ -215,11 +213,6 @@ public class MainActivity extends Activity {
         CarbRatio = editTextCarbRatio.getText().toString();
         InsulinReactionTime = editTextInsulinReactionTime.getText().toString();
         GlucagonReactionTime = editTextGlucagonReactionTime.getText().toString();
-
-        //APStateModel state = StateManager.getInstance().getState();
-
-//        insertUserSettings(state.getPatientParameters());
-//        insertDeviceSettings(state.getDeviceData());
 
         ViewWrapper wrapper = new ViewWrapper();
         wrapper.setCGMBLEAddress(CGMBLEAddress);
@@ -291,8 +284,7 @@ public class MainActivity extends Activity {
         // Get instance of Vibrator from current Context
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        // Vibrate for 300 milliseconds
-        //v.vibrate(300);
+        // Vibrate for 1000 milliseconds
         v.vibrate(1000);
     }
 
